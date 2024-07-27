@@ -14,7 +14,7 @@ export const data = [
     link: "/",
   },
   {
-    title: "Projects",
+    title: "Predecir Anemia",
     icon: <ProjectIcon />,
     link: "/admin/projects",
   },
