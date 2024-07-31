@@ -1,6 +1,5 @@
 import React from "react";
 import { TopBar } from "./TopBar";
-import { Overlay } from "./Overlay";
 import { Sidebar } from "./sidebar/Sidebar";
 import { DashboardProvider, useDashboardContext } from "./Provider";
 
