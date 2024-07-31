@@ -2,19 +2,19 @@
 import React,{useState} from "react";
 
 const Login = () => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [] = useState(null);
 
   const handleGoogleLogin = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    alert("Por google")
-  }
+    alert("Por google");
+  };
 
   const handleTraditionalLogin = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
-    alert("Datos de login: " + username + "--" + password)
-  }
+    alert("Datos de login: " + username + "--" + password);
+  };
 
   return (
     <section className="mx-5 my-2 mb-8 flex h-screen flex-col items-center justify-center space-y-10 md:m-0 md:flex-row md:space-x-16 md:space-y-0">
