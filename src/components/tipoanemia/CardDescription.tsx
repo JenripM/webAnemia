@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable tailwindcss/no-custom-classname */
+import React from "react";
 
 interface CardData{
     data: {
@@ -12,7 +13,7 @@ const CardDescription = (props: CardData) => {
 
     const style: React.CSSProperties = {
         backgroundImage: `url(/images/${props.data.image_url}.jpg`
-    }
+    };
 
     return (
         <div className="relative grid h-[15rem] max-w-full flex-col items-end justify-center overflow-hidden rounded-xl bg-white bg-clip-border text-center text-gray-700">
