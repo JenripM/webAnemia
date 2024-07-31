@@ -16,7 +16,7 @@ export const data = [
   {
     title: "Predecir Anemia",
     icon: <ProjectIcon />,
-    link: "/admin/projects",
+    link: "/guest/tipoanemia",
   },
   {
     title: "Pronostico de Prevalencia",
