@@ -1,6 +1,5 @@
-import React from 'react';
-import type { InputNumberProps } from 'antd';
-import { InputNumber, Space } from 'antd';
+import React from "react";
+import { InputNumber, Space } from "antd";
 
 const CountInput: React.FC = () => (
     <Space wrap>
@@ -10,7 +9,7 @@ const CountInput: React.FC = () => (
       max={7}
       defaultValue={4}
       type='number'
-      style={{ textAlign: 'center' }}
+      style={{ textAlign: "center" }}
     />
   </Space>
 );
