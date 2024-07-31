@@ -230,6 +230,9 @@ const FormAnemia = () => {
                     <td className="border border-gray-300 px-4 py-2">
                       
                     </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      
+                    </td>
                   </tr>
                 </tbody>
               </table>
