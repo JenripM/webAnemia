@@ -9,7 +9,7 @@ import { TimeManageIcon } from "./icons/TimeManageIcon";
 
 export const data = [
   {
-    title: "Dashboard",
+    title: "Home",
     icon: <HomeIcon />,
     link: "/",
   },
@@ -19,33 +19,28 @@ export const data = [
     link: "/admin/projects",
   },
   {
-    title: "My tasks",
-    icon: <TaskIcon />,
+    title: "Pronostico de Prevalencia",
+    icon: <ProjectIcon />,
     link: "/admin/tasks",
   },
   {
-    title: "Calendar",
-    icon: <CalendarIcon />,
-    link: "/admin/calendar",
+    title: "Probabilidad en base a dieta",
+    icon: <ProjectIcon />,
+    link: "/guest/dieta",
   },
   {
-    title: "Time manage",
-    icon: <TimeManageIcon />,
+    title: "Historial",
+    icon: <ProjectIcon />,
     link: "/admin/time-manage",
   },
   {
-    title: "Reports",
-    icon: <ReportIcon />,
+    title: "Usuarios",
+    icon: <ProjectIcon />,
     link: "/admin/reports",
   },
   {
-    title: "Settings",
-    icon: <SettingsIcon />,
+    title: "Cerrar Sesion",
+    icon: <ProjectIcon />,
     link: "/admin/settings",
-  },
-  {
-    title: "Documentation",
-    icon: <DocIcon />,
-    link: "/admin/documentation",
   },
 ];

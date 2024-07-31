@@ -21,7 +21,7 @@ const Content = (props: ChildrenProps) => {
   return (
     <div className={style.container}>
       <div className="flex items-start">
-        <Overlay />
+        {/* <Overlay /> */}
         <Sidebar mobileOrientation="end" />
         <div
           className={`${style.mainContainer} 
