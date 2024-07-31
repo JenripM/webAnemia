@@ -242,6 +242,6 @@ const FormAnemia = () => {
       </div>
     </>
     );
-}
+};
 
 export default FormAnemia;
