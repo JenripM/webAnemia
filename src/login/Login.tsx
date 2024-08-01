@@ -14,7 +14,7 @@ const Login = () => {
             className="mb-2 mr-2 inline-flex w-full items-center justify-between rounded-lg bg-[#000000] px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-[#A9A9A9]/90 focus:outline-none focus:ring-4 focus:ring-[#4285F4]/50"
             onClick={async () => {
               const result = await signIn("google", {
-                callbackUrl: "/dashboard",
+                callbackUrl: "/admin/dashboard",
                 redirect: false,
               });
               console.log(result);
