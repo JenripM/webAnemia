@@ -1,11 +1,7 @@
-import { DocIcon } from "./icons/DocIcon";
 import { HomeIcon } from "./icons/HomeIcon";
-import { TaskIcon } from "./icons/TaskIcon";
-import { ReportIcon } from "./icons/ReportIcon";
+
 import { ProjectIcon } from "./icons/ProjectIcon";
-import { SettingsIcon } from "./icons/SettingsIcon";
-import { CalendarIcon } from "./icons/CalendarIcon";
-import { TimeManageIcon } from "./icons/TimeManageIcon";
+
 
 export const data = [
   {
@@ -21,7 +17,7 @@ export const data = [
   {
     title: "Predecir Anemia",
     icon: <ProjectIcon />,
-    link: "/admin/projects",
+    link: "/guest/tipoanemia",
   },
   {
     title: "Pronostico de Prevalencia",

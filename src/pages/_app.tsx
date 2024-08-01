@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       {isLoginPage? (
         <Component {...pageProps} />
       ) : (
-        <DashboardLayout>
+        <DashboardLayout >
           <Component {...pageProps} />
         </DashboardLayout>
       )}
