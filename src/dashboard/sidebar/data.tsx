@@ -14,6 +14,11 @@ export const data = [
     link: "/",
   },
   {
+    title: "Registrar paciente",
+    icon: <ProjectIcon />,
+    link: "/guest/register",
+  },
+  {
     title: "Predecir Anemia",
     icon: <ProjectIcon />,
     link: "/admin/projects",

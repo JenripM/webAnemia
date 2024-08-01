@@ -1,4 +1,4 @@
-const dataPagesDescriptions = {
+export const dataPagesDescriptions = {
     prediccion: {
         title: 'Deteccion de anemia',
         description: 'Esta sección se enfoca en identificar signos tempranos de anemia basándose en los datos disponibles. A través de una serie de indicadores, esta página ayuda a detectar posibles deficiencias en los niveles de hemoglobina o glóbulos rojos, proporcionando información crucial para la intervención temprana.',
@@ -16,4 +16,4 @@ const dataPagesDescriptions = {
     },
 }
 
-export default dataPagesDescriptions;
+
