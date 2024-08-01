@@ -69,11 +69,11 @@ export default class Example extends PureComponent<IProps> {
           <YAxis />
           <Tooltip />
           <Legend   />
-          <Bar dataKey="severa" fill="#8884d8" /> {/* red */}
-          <Bar dataKey="moderada" fill="#413ea0" /> {/* purple */}
-          <Bar dataKey="leve" fill="#82ca9d" /> {/* blue */}
-          <Bar dataKey="normal" fill="#34A853" /> {/* green */}
-          <Area type="monotone" dataKey="pronostico" name='Pronóstico' fill="#8884d8" stroke="#8884d8" />
+          <Bar dataKey="severa" fill="#D8261A" /> {/* red */}
+          <Bar dataKey="moderada" fill="#E6AD09" /> {/* purple */}
+          <Bar dataKey="leve" fill="#7B3712" /> {/* blue */}
+          <Bar dataKey="normal" fill="#0C8F3D" /> {/* green */}
+          <Area type="monotone" dataKey="pronostico" name='Pronóstico' fill="#8884d8" stroke="#8884d8" fillOpacity={0.1} />
           <Line type="monotone" dataKey="totalAnemia" name='Total diagnósticos' stroke="#ff7300" dot={false} />
         </ComposedChart>
       </ResponsiveContainer>
