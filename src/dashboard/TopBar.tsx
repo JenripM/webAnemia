@@ -65,7 +65,6 @@ export function TopBar() {
           </div>
           <div className="relative ml-5 flex w-1/4 items-center justify-end p-1 sm:right-auto sm:mr-0">
             <h1>{session?.user?.name}</h1><br />
-            <h1>{session?.accessToken}</h1>
               <img
                 alt="Jonathan Ilunga"
                 src={session?.user?.image || ""}
