@@ -1,11 +1,29 @@
-import React from "react";
-import { PROVINCIAS } from "../../../src/constants/Provincias";
-import { DISTRITOS } from "../../../src/constants/Distritos";
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import DepartamentoSelect from "./DepartamentoSelect";
 
 
 const FormAnemia = () => {
-    return (
-        <>
+  const [departamentos, setDepartamentos] = useState([]);
+  const [selectedDepartamento, setSelectedDepartamento] = useState("");
+
+  useEffect(() => {
+    // Fetch departamentos on component mount
+    const fetchDepartamentos = async () => {
+      try {
+        const response = await axios.get(`${process.env.BACKEND_URL}/departamentos`);
+        setDepartamentos(response.data);
+      } catch (error) {
+        console.error("Error fetching departamentos:", error);
+      }
+    };
+    fetchDepartamentos();
+  }, []);
+
+
+  return (
+    <>
       <div className="flex flex-col sm:flex-row">
         <div className="w-full p-4 sm:w-1/2 xl:w-1/2">
           <div className="rounded-2xl bg-white p-4 shadow-lg">
@@ -145,38 +163,18 @@ const FormAnemia = () => {
                     placeholder="Talla (cm)"
                   />
                 </div>
-               
+
                 <br />
                 <div className="w-full">
-                  <label htmlFor="provincia" className="text-gray-600">
-                    Provincia:
-                  </label>
-                  <select
-                    id="provincia"
-                    className="block rounded-2xl bg-gray-200 px-4 py-1.5 leading-normal text-black opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 lg:w-full"
-                  >
-                    {PROVINCIAS.map((provincia) => (
-                      <option key={provincia.value} value={provincia.value}>
-                        {provincia.label}
-                      </option>
-                    ))}
-                  </select>
+                  <DepartamentoSelect
+                    departamentos={departamentos}
+                    selectedDepartamento={selectedDepartamento}
+                    onDepartamentoChange={setSelectedDepartamento}
+                  />
                 </div>
                 <br />
                 <div className="w-full">
-                  <label htmlFor="distrito" className="text-gray-600">
-                    Distrito:
-                  </label>
-                  <select
-                    id="distrito"
-                    className="block rounded-2xl bg-gray-200 px-4 py-1.5 leading-normal text-black opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 lg:w-full"
-                  >
-                    {DISTRITOS.map((distritos) => (
-                      <option key={distritos.value} value={distritos.value}>
-                        {distritos.label}
-                      </option>
-                    ))}
-                  </select>
+                 
                 </div>
                 <br />
                 <button
@@ -222,15 +220,10 @@ const FormAnemia = () => {
                   <tr>
                     <td className="border border-gray-300 px-4 py-2"></td>
                     <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2">
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                    </td>
                     <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      
-                    </td>
-                   
+                    <td className="border border-gray-300 px-4 py-2"></td>
+                    <td className="border border-gray-300 px-4 py-2"></td>
+                    <td className="border border-gray-300 px-4 py-2"></td>
                   </tr>
                 </tbody>
               </table>
@@ -239,7 +232,7 @@ const FormAnemia = () => {
         </div>
       </div>
     </>
-    );
+  );
 };
 
 export default FormAnemia;
