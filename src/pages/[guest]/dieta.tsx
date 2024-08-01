@@ -6,7 +6,7 @@ function Dieta(){
     return <>
         <CardDescription data={dataPagesDescriptions.dieta}/>
         <FormDieta/>
-    </>
+    </>;
 }
 
 export default Dieta;
