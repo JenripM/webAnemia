@@ -12,7 +12,7 @@ const FormAnemia = () => {
     // Fetch departamentos on component mount
     const fetchDepartamentos = async () => {
       try {
-        const response = await axios.get(`${process.env.BACKEND_URL}/departamentos`);
+        const response = await axios.get(`http://apianemia.onrender.com/departamentos`);
         setDepartamentos(response.data);
       } catch (error) {
         console.error("Error fetching departamentos:", error);
