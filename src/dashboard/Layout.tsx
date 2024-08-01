@@ -1,8 +1,9 @@
+
 import React from "react";
 import { TopBar } from "./TopBar";
 import { Sidebar } from "./sidebar/Sidebar";
-import { DashboardProvider, useDashboardContext } from "./Provider";
-
+import { useDashboardContext } from "./Provider";
+import Provider from "@/context/Provider";
 interface ChildrenProps {
   children: React.ReactNode;
 }
@@ -35,9 +36,10 @@ const Content = (props: ChildrenProps) => {
 };
 
 export function DashboardLayout(props: ChildrenProps) {
+
   return (
-    <DashboardProvider>
+    <Provider>
       <Content>{props.children}</Content>
-    </DashboardProvider>
+    </Provider>
   );
 }
