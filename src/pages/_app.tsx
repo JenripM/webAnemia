@@ -4,7 +4,7 @@ import { AppProps } from "next/app";
 import { DashboardLayout } from "@/dashboard/Layout";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const isLoginPage = Component.name === "LoginPage"; 
+  const isLoginPage = Component.name === "HomePage"; 
   return (
     <>
       <Head>

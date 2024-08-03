@@ -1,6 +1,8 @@
-import Reporte from "@/components/reporte";
+import Login from "@/login/Login";
 
 export default function HomePage() {
-  console.log("render");
-  return <Reporte title="Reporte de anemia" />;
+  return <>
+        <Login/>
+    </>;
+
 }

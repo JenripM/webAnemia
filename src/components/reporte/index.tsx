@@ -18,7 +18,7 @@ export default function Reporte(props: ContentProps) {
 
   const fetchDepartamentos = async () => {
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/diagnosticos/estadisticas/evolucion-mensual?${year ? `ano=${year}` : "" }${month ? `&mes=${month}` : ''}`);
+      const response = await fetch(`https://apianemia.onrender.com/diagnosticos/estadisticas/evolucion-mensual?${year ? `ano=${year}` : "" }${month ? `&mes=${month}` : ''}`);
       if(response.ok){
         const data = await response.json();
         return data
@@ -56,6 +56,25 @@ export default function Reporte(props: ContentProps) {
             /* Reduce to distinc years */ 
             data={
               [
+                {
+                  id: "2019",
+                  label: "2019",
+                },
+                {
+                  id: "2020",
+                  label: "2020",
+                },
+                
+                {
+                  id: "2021",
+                  label: "2021",
+                },
+                {
+                  id: "2022",
+                  label: "2022",
+                },
+                
+                
                 {
                   id: "2023",
                   label: "2023",
