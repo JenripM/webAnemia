@@ -1,237 +1,195 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import DepartamentoSelect from "./DepartamentoSelect";
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, Select, Radio, Checkbox, Card } from 'antd';
+import axios from 'axios';
 
+const url = "https://apianemia.onrender.com";
+const { Option } = Select;
 
-const FormAnemia = () => {
-  const [departamentos, setDepartamentos] = useState([]);
-  const [selectedDepartamento, setSelectedDepartamento] = useState("");
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
+
+const tailFormItemLayout = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 16,
+      offset: 8,
+    },
+  },
+};
+
+const FormAnemia: React.FC = () => {
+  const [patients, setPatients] = useState<Array<{ id: string, nombre: string, dni: string, distrito: string }>>([]);
+  const [form] = Form.useForm();
 
   useEffect(() => {
-    // Fetch departamentos on component mount
-    const fetchDepartamentos = async () => {
+    const fetchPatients = async () => {
       try {
-        const response = await axios.get(`http://apianemia.onrender.com/departamentos`);
-        setDepartamentos(response.data);
+        const response = await axios.get(`${url}/pacientes`);
+        setPatients(response.data);
       } catch (error) {
-        console.error("Error fetching departamentos:", error);
+        console.error('Error fetching patients:', error);
       }
     };
-    fetchDepartamentos();
+
+    fetchPatients();
   }, []);
 
+  const handlePatientChange = async (value: string) => {
+    const patient = patients.find(patient => patient.id === value);
+    if (patient) {
+      form.setFieldsValue({
+        dni: patient.dni,
+      });
+    }
+  };
+
+  const handleSubmit = async (values: any) => {
+    const formattedValues = {
+      ...values,
+      fecha_nacimiento: values.fecha_nacimiento ? values.fecha_nacimiento.toISOString().split('T')[0] : undefined,
+    };
+
+    try {
+      const response = await axios.post(`${url}/pacientes/apoderado/1/create`, formattedValues);
+      console.log('Respuesta de la API:', response.data);
+      form.resetFields(); // Clear the form fields
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  const handlePredict = async () => {
+    try {
+      const values = await form.validateFields();
+      const data = {
+        Paciente: values.nombre,
+        Peso: values.peso,
+        Talla: values.talla,
+        Hemoglobina: values.hemoglobina,
+        Cred: values.control_desarrollo ? 1 : 0,
+        Suplementacion: values.suplementacion ? 1 : 0,
+      };
+
+      const response = await axios.post(`${url}/predict/diagnostico`, data);
+      form.setFieldsValue({ resultado_prediccion: response.data.diagnostico });
+    } catch (error) {
+      console.error('Error predicting diagnosis:', error);
+    }
+  };
 
   return (
-    <>
-      <div className="flex flex-col sm:flex-row">
-        <div className="w-full p-4 sm:w-1/2 xl:w-1/2">
-          <div className="rounded-2xl bg-white p-4 shadow-lg">
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="relative rounded-xl bg-blue-100 p-2">
-                  <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 2447.6 2452.5"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipRule="evenodd" fillRule="evenodd">
-                      <path
-                        d="m897.4 0c-135.3.1-244.8 109.9-244.7 245.2-.1 135.3 109.5 245.1 244.8 245.2h244.8v-245.1c.1-135.3-109.5-245.1-244.9-245.3.1 0 .1 0 0 0m0 654h-652.6c-135.3.1-244.9 109.9-244.8 245.2-.2 135.3 109.4 245.1 244.7 245.3h652.7c135.3-.1 244.9-109.9 244.8-245.2.1-135.4-109.5-245.2-244.8-245.3z"
-                        fill="#36c5f0"
-                      />
-                      <path
-                        d="m2447.6 899.2c.1-135.3-109.5-245.1-244.8-245.2-135.3.1-244.9 109.9-244.8 245.2v245.3h244.8c135.3-.1 244.9-109.9 244.8-245.3zm-652.7 0v-654c.1-135.2-109.4-245-244.7-245.2-135.3.1-244.9 109.9-244.8 245.2v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.3z"
-                        fill="#2eb67d"
-                      />
-                      <path
-                        d="m1550.1 2452.5c135.3-.1 244.9-109.9 244.8-245.2.1-135.3-109.5-245.1-244.8-245.2h-244.8v245.2c-.1 135.2 109.5 245 244.8 245.2zm0-654.1h652.7c135.3-.1 244.9-109.9 244.8-245.2.2-135.3-109.4-245.1-244.7-245.3h-652.7c-135.3.1-244.9 109.9-244.8 245.2-.1 135.4 109.4 245.2 244.7 245.3z"
-                        fill="#ecb22e"
-                      />
-                      <path
-                        d="m0 1553.2c-.1 135.3 109.5 245.1 244.8 245.2 135.3-.1 244.9-109.9 244.8-245.2v-245.2h-244.8c-135.3.1-244.9 109.9-244.8 245.2zm652.7 0v654c-.2 135.3 109.4 245.1 244.7 245.3 135.3-.1 244.9-109.9 244.8-245.2v-653.9c.2-135.3-109.4-245.1-244.7-245.3-135.4 0-244.9 109.8-244.8 245.1 0 0 0 .1 0 0"
-                        fill="#e01e5a"
-                      />
-                    </g>
-                  </svg>
-                </span>
-                <div className="ml-2 flex flex-col">
-                  <span className="font-bold text-black">
-                    Prediccion Anemia
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    Ingresa los datos de tu paciente y obten una prediccion
-                    sobre el nivel de anemia que presenta.
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <button className="rounded-full border border-gray-200 p-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    className="h-4 w-4 text-yellow-500"
-                    fill="currentColor"
-                    viewBox="0 0 1792 1792"
-                  >
-                    <path d="M1728 647q0 22-26 48l-363 354 86 500q1 7 1 20 0 21-10.5 35.5t-30.5 14.5q-19 0-40-12l-449-236-449 236q-22 12-40 12-21 0-31.5-14.5t-10.5-35.5q0-6 2-20l86-500-364-354q-25-27-25-48 0-37 56-46l502-73 225-455q19-41 49-41t49 41l225 455 502 73q56 9 56 46z" />
-                  </svg>
-                </button>
-                <button className="text-gray-200">
-                  <svg
-                    width="25"
-                    height="25"
-                    fill="currentColor"
-                    viewBox="0 0 1792 1792"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M1088 1248v192q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h192q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h192q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h192q40 0 68 28t28 68z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="mb-6">
-              <form action="">
-                <div className="w-full">
-                  <input
-                    type="text"
-                    className="block rounded-2xl bg-gray-200 py-1.5 pl-10 pr-4 leading-normal text-black opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 lg:w-full"
-                    placeholder="Nombre del Paciente"
-                  />
-                </div>
-                <br />
-                <div className="w-full">
-                  <input
-                    type="text"
-                    className="block rounded-2xl bg-gray-200 py-1.5 pl-10 pr-4 leading-normal text-black opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 lg:w-full"
-                    placeholder="Apellidos del Paciente"
-                  />
-                </div>
-                <br />
-                <div className="w-full">
-                  <div className="flex items-center space-x-4">
-                    <label htmlFor="">Genero: </label>
-                    <div className="flex items-center">
-                      <input
-                        id="masculino"
-                        type="radio"
-                        name="genero"
-                        value="masculino"
-                        className="h-4 w-4"
-                      />
-                      <label htmlFor="masculino" className="ml-2 text-gray-700">
-                        Masculino
-                      </label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        id="femenino"
-                        type="radio"
-                        name="genero"
-                        value="femenino"
-                        className="h-4 w-4"
-                      />
-                      <label htmlFor="femenino" className="ml-2 text-gray-700">
-                        Femenino
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <br />
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <Card
+        title="Registrar Predicción de Diagnóstico"
+        bordered={false}
+        style={{ width: '100%' }}
+      >
+        <Form
+          {...formItemLayout}
+          form={form}
+          onFinish={handleSubmit}
+        >
+          <Form.Item
+            label="Nombre Completo:"
+            name="nombre"
+            rules={[{ required: true, message: 'Seleccione el nombre completo del infante' }]}
+          >
+            <Select style={{ width: '100%' }} onChange={handlePatientChange}>
+              {patients.map(patient => (
+                <Option key={patient.id} value={patient.id}>
+                  {patient.nombre}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
-                <div className="w-full">
-                  <input
-                    type="text"
-                    className="block rounded-2xl bg-gray-200 py-1.5 pl-10 pr-4 leading-normal text-black opacity-90  focus:outline-none  focus:ring-2 focus:ring-blue-500 "
-                    placeholder="Edad en Meses"
-                  />
-                </div>
+          <Form.Item
+            label="DNI:"
+            name="dni"
+          >
+            <Input readOnly />
+          </Form.Item>
 
-                <br />
-                <div className="gap-2 lg:flex">
-                  <input
-                    type="text"
-                    className="block rounded-2xl bg-gray-200 py-1.5 pl-10 pr-4 leading-normal text-black opacity-90  focus:outline-none  focus:ring-2 focus:ring-blue-500 "
-                    placeholder="Peso (Kg)"
-                  />
-                  <br />
-                  <input
-                    type="text"
-                    className="block rounded-2xl bg-gray-200 py-1.5 pl-10 pr-4 leading-normal text-black opacity-90  focus:outline-none  focus:ring-2 focus:ring-blue-500 "
-                    placeholder="Talla (cm)"
-                  />
-                </div>
+       
+          <Form.Item
+            label="Peso en kg:"
+            name="peso"
+            rules={[{ required: true, message: 'Ingresar el peso en kg' }]}
+          >
+            <Input type="number" style={{ width: '100%' }} />
+          </Form.Item>
 
-                <br />
-                <div className="w-full">
-                  <DepartamentoSelect
-                    departamentos={departamentos}
-                    selectedDepartamento={selectedDepartamento}
-                    onDepartamentoChange={setSelectedDepartamento}
-                  />
-                </div>
-                <br />
-                <div className="w-full">
-                 
-                </div>
-                <br />
-                <button
-                  type="submit"
-                  className="w-full rounded-xl bg-blue-500 p-2 font-bold text-white"
-                >
-                  Predecir
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div className="w-full p-4 sm:w-1/2 xl:w-1/2">
-          <div className="rounded-2xl bg-white p-4 shadow-lg">
-            <div className="mb-6">
-              <h2 className="text-xl font-bold">Historial de Pacientes</h2>
-              <table className="mt-4 min-w-full border-collapse border border-gray-200">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
-                      Nombre
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
-                      Apellido
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
-                      Fecha de Nacimiento
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
-                      Genero
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
-                      Provincia
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 text-left">
-                      Distrito
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* AquÃ­ se pueden agregar las filas de la tabla */}
-                  {/* Ejemplo de fila */}
-                  <tr>
-                    <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2"></td>
-                    <td className="border border-gray-300 px-4 py-2"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+          <Form.Item
+            label="Talla en cm:"
+            name="talla"
+            rules={[{ required: true, message: 'Ingresar la talla en cm' }]}
+          >
+            <Input type="number" style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item
+            label="Hemoglobina:"
+            name="hemoglobina"
+            rules={[{ required: true, message: 'Ingresar el nivel de hemoglobina' }]}
+          >
+            <Input type="number" step="0.1" style={{ width: '100%' }} />
+          </Form.Item>
+
+     <Form.Item
+  style={{ marginBottom: '16px' }}
+>
+  <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginLeft: '150px'}}>
+    <Form.Item
+      name="control_desarrollo"
+      valuePropName="checked"
+      style={{ marginBottom: '0' }}
+    >
+      <Checkbox>Control de desarrollo y crecimiento</Checkbox>
+    </Form.Item>
+
+    <Form.Item
+      name="suplementacion"
+      valuePropName="checked"
+      style={{ marginBottom: '0' }}
+    >
+      <Checkbox>Suplementación</Checkbox>
+    </Form.Item>
+  </div>
+</Form.Item>
+
+
+          <Form.Item
+            label="Resultado de predicción:"
+            name="resultado_prediccion"
+          >
+            <Input readOnly />
+          </Form.Item>
+
+          <Form.Item {...tailFormItemLayout}>
+            <Button
+              type="primary"
+              style={{ backgroundColor: 'black', color: 'white', marginRight: '10px' }}
+              onClick={handlePredict}
+            >
+              Predecir
+            </Button>
+        
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
   );
 };
 
