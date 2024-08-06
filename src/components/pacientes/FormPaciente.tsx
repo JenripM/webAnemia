@@ -1,15 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Button, DatePicker, Form, Input, Select } from 'antd';
-import { Flex } from 'antd';
-import { Alert } from 'antd';
+import React, { useEffect, useState, useContext } from "react";
+import { Button, DatePicker, Form, Input, Select } from "antd";
+import { Flex } from "antd";
 
-import axios from 'axios';
-import { PacientesContext } from '@/providers/pacientesContext';
+import axios from "axios";
+import { PacientesContext } from "@/providers/pacientesContext";
 
-
-
-
-const url = 'https://apianemia.onrender.com'
+const url = "https://apianemia.onrender.com";
 const { Option } = Select;
 
 const formItemLayout = {
@@ -51,13 +47,13 @@ const FormPaciente: React.FC = () => {
 
   useEffect(() => {
     // Función para obtener datos de la API
-    console.log(url)
+    console.log(url);
     const fetchProvinces = async () => {
       try {
         const response = await axios.get(`${url}/provincias`);
         setProvinces(response.data);
       } catch (error) {
-        console.error('Error fetching provincias:', error);
+        console.error("Error fetching provincias:", error);
       }
     };
 
@@ -124,7 +120,7 @@ const FormPaciente: React.FC = () => {
                 <Form.Item
                     label="DNI:"
                     name="dni"
-                    rules={[{ message: 'Ingresar DNI del infante' }]}
+                    rules={[{ message: "Ingresar DNI del infante" }]}
                 >
                     <Input style={{ marginLeft: '12px' }} />
                 </Form.Item>
@@ -190,7 +186,7 @@ const FormPaciente: React.FC = () => {
                 <Form.Item
                     label="Fecha Nacimiento:"
                     name="fecha_nacimiento"
-                    rules={[{ required: true, message: 'Ingresar la fecha de nacimiento' }]}
+                    rules={[{ required: true, message: "Ingresar la fecha de nacimiento" }]}
                 >
                 <DatePicker format="YYYY-MM-DD" style={{ marginLeft: '12px' }} />          
                 </Form.Item>
