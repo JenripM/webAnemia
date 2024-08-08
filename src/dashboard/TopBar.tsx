@@ -73,7 +73,6 @@ export function TopBar() {
               />
           
           </div>
-          <p>{session?.idApoderado}</p>
         </div>
       </div>
     </header>

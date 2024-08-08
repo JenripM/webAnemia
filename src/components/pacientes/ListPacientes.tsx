@@ -2,17 +2,9 @@ import React, { useState, useEffect, useContext} from 'react';
 import { Divider, List, Typography } from 'antd';
 import axios from 'axios';
 import { PacientesContext } from '@/providers/pacientesContext';
+import { useSession } from 'next-auth/react';
 
 
-type Paciente = {
-    id: number,
-    codigo_cnv: string,
-    dni: string,
-    nombre: string,
-    sexo: string,
-    fecha_nacimiento: string,
-    distrito: number
-};
 
 const boxStyle: React.CSSProperties = {
     width: '100%',
@@ -24,15 +16,26 @@ const url = 'https://apianemia.onrender.com'
 
 
 const App: React.FC = () => {
-    const { pacientes, agregarPaciente} = useContext(PacientesContext);
-    const [refreshPacientes, setRefreshPacientes] = useState([])
     
+  const context = useContext(PacientesContext);
+
+    // Manejar el caso en que el contexto es undefined
+    if (!context) {
+        return <div>Loading...</div>; // O cualquier otro mensaje o componente que indique que el contexto está cargando
+    }
+    const { pacientes } = context;
+    const [refreshPacientes, setRefreshPacientes] = useState([])
+    const { data: session, status } = useSession();
+
+
     useEffect(() => {
         // Función para obtener datos de la API
         const fetchPacientes = async () => {
           try {
-            const response = await axios.get(`${url}/pacientes/apoderado/1`);
-            setRefreshPacientes(response.data)
+            if (session && session.idApoderado) {
+              const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
+              setRefreshPacientes(response.data)
+            }
             //agregarPaciente(response.data);
           } catch (error) {
             console.error('Error fetching provincias:', error);

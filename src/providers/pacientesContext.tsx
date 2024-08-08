@@ -3,8 +3,18 @@ import React, { createContext, useState, ReactNode } from 'react';
 // Define los tipos permitidos para alertType
 type AlertType = 'success' | 'info' | 'warning' | 'error';
 
+type Paciente = {
+  id: number,
+  codigo_cnv: string,
+  dni: string,
+  nombre: string,
+  sexo: string,
+  fecha_nacimiento: string,
+  distrito: number
+};
+
 interface PacientesContextType {
-  pacientes: any[]; // Reemplaza 'any' con el tipo específico si es posible
+  pacientes: Paciente[]; // Reemplaza 'any' con el tipo específico si es posible
   agregarPaciente: (paciente: any) => void; // Reemplaza 'any' con el tipo específico si es posible
   showAlert: boolean;
   alertMessage: string;
