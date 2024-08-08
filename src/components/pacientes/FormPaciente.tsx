@@ -38,13 +38,24 @@ const boxStyle: React.CSSProperties = {
   padding: 25,
 };
 
-const FormPaciente: React.FC = () => {
+interface FormPacienteProps {
+  //handleShowAlert: (mensaje: string, type: string) => void;
+}
+
+const FormPaciente: React.FC<FormPacienteProps> = () => {
   const [provinces, setProvinces] = useState<Array<{ id: string, provincia: string }>>([]);
   const [distritos, setDistritos] = useState<Array<{ id: string, distrito: string }>>([]);
   const [provinciaSelected, setProvinciaSelected] = useState<string | undefined>(undefined);
   const [form] = Form.useForm();
-  const { pacientes, agregarPaciente } = useContext(PacientesContext);
 
+  const context = useContext(PacientesContext);
+
+  if (!context) {
+    throw new Error('PacientesContext must be used within a PacientesProvider');
+  }
+
+  const { pacientes, agregarPaciente, showAlert, alertMessage, alertType, handleShowAlert } = context;
+  
   useEffect(() => {
     // Función para obtener datos de la API
     console.log(url);
@@ -88,11 +99,19 @@ const FormPaciente: React.FC = () => {
       agregarPaciente(response.data);
       form.resetFields(); // Clear the form fields
       setProvinciaSelected(undefined); // Reset the Select component
-
-      //setShowSuccessAlert(true); // Mostrar alerta de éxito
+      handleShowAlert('Paciente registrado correctamente!', 'success');
       console.log(pacientes);
     } catch (error) {
       console.error('Error submitting form:', error);
+
+      const errorMessage = axios.isAxiosError(error) && error.response?.data
+            ? Object.values(error.response.data)
+                .flat()
+                .map(msg => `• ${msg}`)
+                .join('\n') // Usa salto de línea para mostrar cada error en una línea separada
+            : 'Error desconocido';
+
+      handleShowAlert(errorMessage, 'error');
     }
   };
 
