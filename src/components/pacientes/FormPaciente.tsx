@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Button, DatePicker, Form, Input, Select } from "antd";
 import { Flex } from "antd";
-
+import { useSession } from 'next-auth/react';
 import axios from "axios";
 import { PacientesContext } from "@/providers/pacientesContext";
 
@@ -47,6 +47,8 @@ const FormPaciente: React.FC<FormPacienteProps> = () => {
   const [distritos, setDistritos] = useState<Array<{ id: string, distrito: string }>>([]);
   const [provinciaSelected, setProvinciaSelected] = useState<string | undefined>(undefined);
   const [form] = Form.useForm();
+  const { data: session, status } = useSession();
+
 
   const context = useContext(PacientesContext);
 
@@ -94,13 +96,15 @@ const FormPaciente: React.FC<FormPacienteProps> = () => {
     const jsonData = JSON.stringify(formattedValues);
     console.log('Datos del formulario en JSON:', jsonData);
     try {
-      const response = await axios.post(`${url}/pacientes/apoderado/1/create`, formattedValues);
-      console.log('Respuesta de la API:', response.data);
-      agregarPaciente(response.data);
-      form.resetFields(); // Clear the form fields
-      setProvinciaSelected(undefined); // Reset the Select component
-      handleShowAlert('Paciente registrado correctamente!', 'success');
-      console.log(pacientes);
+      if (session && session.idApoderado) {
+        const response = await axios.post(`${url}/pacientes/apoderado/${session.idApoderado}/create`, formattedValues);
+        console.log('Respuesta de la API:', response.data);
+        agregarPaciente(response.data);
+        form.resetFields(); // Clear the form fields
+        setProvinciaSelected(undefined); // Reset the Select component
+        handleShowAlert('Paciente registrado correctamente!', 'success');
+        console.log(pacientes);
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
 
@@ -115,13 +119,6 @@ const FormPaciente: React.FC<FormPacienteProps> = () => {
     }
   };
 
-//   useEffect(() => {
-//     if (showSuccessAlert) {
-//       setTimeout(() => {
-//         setShowSuccessAlert(false);
-//       }, 3000); // Ocultar alerta después de 3 segundos
-//     }
-//   }, [showSuccessAlert]);
   return (
 
     <>
