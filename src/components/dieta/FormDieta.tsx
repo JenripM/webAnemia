@@ -97,9 +97,10 @@ const FormDieta = () => {
       <p className="px-4">
         En este formulario, podrás ingresar la frecuencia con la que consumes diferentes tipos de alimentos y bebidas. Esta información nos ayudará a entender mejor tus hábitos alimenticios y a ofrecerte recomendaciones más personalizadas para mejorar tu dieta. Por favor, completa todos los campos con la mayor precisión posible.
       </p>
-      <div>
+      <div style={{paddingRight: '20px', paddingLeft: '20px'}}>
+        <p className='py-4 font-medium'>Elegir paciente</p>
         <Select
-          style={{ marginLeft: '12px' }}
+          style={{ width: '100%'}}
           placeholder="Selecciona un paciente"
           loading={loading}
           onChange={handlePacienteChange}
