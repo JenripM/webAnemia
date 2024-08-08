@@ -10,6 +10,7 @@ interface CustomSession {
   };
   accessToken?: string;
   idToken?: string;
+  idApoderado?: string;
 }
 export function TopBar() {
   const { toggleSidebar } = useDashboardContext();
@@ -72,6 +73,7 @@ export function TopBar() {
               />
           
           </div>
+          <p>{session?.idApoderado}</p>
         </div>
       </div>
     </header>

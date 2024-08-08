@@ -24,6 +24,18 @@ const handler = NextAuth({
                         access_token: account.access_token, // Campo esperado por la API
                     });
                     console.log("API response:", response.data);
+
+                    // Extraer el ID de la respuesta de la API
+                    const userId = response.data.id;
+
+                    // Construir la URL con el ID extraído
+                    const responseApoderadoByUsuario = await axios.get(`https://apianemia.onrender.com/apoderados/usuario/${userId}`);
+                    console.log("API response for Apoderado by Usuario:", responseApoderadoByUsuario.data);
+
+                    token.idApoderado = responseApoderadoByUsuario.data.id;
+
+                    console.log("El id apoderado es : " + token.idApoderado)
+
                 } catch (error: unknown) {
                     if (axios.isAxiosError(error)) {
                         console.error("Error sending user data to API:", error.response?.data || error.message);
@@ -42,6 +54,8 @@ const handler = NextAuth({
                 name: token.name,
                 email: token.email,
             };
+            
+            session.idApoderado = token.idApoderado;
             return session;
         },
     },

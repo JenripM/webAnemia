@@ -11,6 +11,7 @@ declare module "next-auth" {
             email?: string | null;
             image?: string | null;
         };
+        idApoderado?: string;
     }
 }
 
@@ -23,5 +24,7 @@ declare module "next-auth/jwt" {
             email?: string | null;
             image?: string | null;
         };
+        idApoderado?: string;
+
     }
 }
