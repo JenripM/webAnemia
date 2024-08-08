@@ -18,7 +18,7 @@ const renderMonthTick = (props: any) => {
 
   return (
     <g transform={`translate(${x},${y})`}>
-    
+
       {isMiddleTick && (
         <text x={0} y={0} dy={-5} textAnchor="middle" fill="#666">
           {year}
@@ -71,7 +71,7 @@ export default class Example extends PureComponent<IProps> {
           <Legend   />
           <Bar dataKey="severa" fill="#D8261A" /> {/* red */}
           <Bar dataKey="moderada" fill="#E6AD09" /> {/* purple */}
-          <Bar dataKey="leve" fill="#7B3712" /> {/* blue */}
+          <Bar dataKey="leve" fill="#FF6C37" /> {/* blue */}
           <Bar dataKey="normal" fill="#0C8F3D" /> {/* green */}
           <Area type="monotone" dataKey="pronostico" name='Pronóstico' fill="#8884d8" stroke="#8884d8" fillOpacity={0.1} />
           <Line type="monotone" dataKey="totalAnemia" name='Total diagnósticos' stroke="#ff7300" dot={false} />
