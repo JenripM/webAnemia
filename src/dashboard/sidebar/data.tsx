@@ -1,6 +1,7 @@
 import { HomeIcon } from "./icons/HomeIcon";
 
 import { ProjectIcon } from "./icons/ProjectIcon";
+import { BsGraphUpArrow  } from 'react-icons/bs'
 
 
 export const data = [
@@ -20,9 +21,9 @@ export const data = [
     link: "/guest/tipoanemia",
   },
   {
-    title: "Pronostico de Prevalencia",
-    icon: <ProjectIcon />,
-    link: "/admin/tasks",
+    title: "Pronóstico de Prevalencia de Anemia",
+    icon: <BsGraphUpArrow />,
+    link: "/guest/pronostico",
   },
   {
     title: "Probabilidad en base a dieta",
