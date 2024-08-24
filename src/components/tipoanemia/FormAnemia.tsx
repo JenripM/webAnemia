@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Select, Radio, Checkbox, Card } from "antd";
+import { Button, Form, Input, Select, Checkbox, Card, Table, Spin } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
@@ -35,7 +35,9 @@ const FormAnemia: React.FC = () => {
     Array<{ id: string; nombre: string; dni: string; distrito: string }>
   >([]);
   const [selectedPaciente, setSelectedPaciente] = useState<number | null>(null);
+  const [prediction, setPrediction] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [diagnosticos, setDiagnosticos] = useState([]);
   const { data: session } = useSession();
 
   const [form] = Form.useForm();
@@ -46,7 +48,6 @@ const FormAnemia: React.FC = () => {
       try {
         if (session && session.idApoderado) {
           const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
-          console.log(response.data);
           setPacientes(response.data);
         }
       } catch (error) {
@@ -57,7 +58,20 @@ const FormAnemia: React.FC = () => {
     };
 
     fetchPacientes();
+    fetchDiagnosticos();
   }, [session]);
+
+  const fetchDiagnosticos = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${url}/diagnosticos`);
+      setDiagnosticos(response.data.data);
+    } catch (error) {
+      console.error('Error fetching diagnosticos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePatientChange = async (value: string) => {
     const patient = patients.find((patient) => patient.id === value);
@@ -65,6 +79,7 @@ const FormAnemia: React.FC = () => {
       form.setFieldsValue({
         dni: patient.dni,
       });
+      setSelectedPaciente(patient.nombre);
     }
   };
 
@@ -81,8 +96,7 @@ const FormAnemia: React.FC = () => {
         `${url}/pacientes/apoderado/1/create`,
         formattedValues
       );
-      console.log("Respuesta de la API:", response.data);
-      form.resetFields(); // Clear the form fields
+      form.resetFields();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -102,17 +116,58 @@ const FormAnemia: React.FC = () => {
 
       const response = await axios.post(`${url}/predict/diagnostico`, data);
       form.setFieldsValue({ resultado_prediccion: response.data.diagnostico });
+      setPrediction(response.data.diagnostico);
     } catch (error) {
       console.error("Error predicting diagnosis:", error);
     }
   };
 
+  const columns = [
+    {
+      title: "Paciente",
+      dataIndex: ["paciente", "nombre"],
+      key: "nombre",
+    },
+    {
+      title: "Diagnóstico",
+      dataIndex: "dx_anemia",
+      key: "dx_anemia",
+    },
+    {
+      title: "Peso (kg)",
+      dataIndex: "peso",
+      key: "peso",
+    },
+    {
+      title: "Talla (cm)",
+      dataIndex: "talla",
+      key: "talla",
+    },
+    {
+      title: "Hgb",
+      dataIndex: "hemoglobina",
+      key: "hemoglobina",
+    },
+    {
+      title: "C",
+      dataIndex: "cred",
+      key: "cred",
+      render: (cred: boolean) => (cred ? "Sí" : "No"),
+    },
+    {
+      title: "S",
+      dataIndex: "suplementacion",
+      key: "suplementacion",
+      render: (suplementacion: boolean) => (suplementacion ? "Sí" : "No"),
+    },
+  ];
+
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
+    <div style={{ display: "flex", gap: "20px", padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
       <Card
         title="Registrar Predicción de Diagnóstico"
         bordered={false}
-        style={{ width: "100%" }}
+        style={{ width: "50%" }}
       >
         <Form {...formItemLayout} form={form} onFinish={handleSubmit}>
           <Form.Item
@@ -213,6 +268,26 @@ const FormAnemia: React.FC = () => {
           </Form.Item>
         </Form>
       </Card>
+
+      <div style={{ width: "50%" }}>
+        <Card title="Información Registrada" bordered={false}>
+          <p>Paciente: {selectedPaciente}</p>
+          <p>Predicción: {prediction}</p>
+        </Card>
+
+        <Card title="Historial de Diagnósticos" bordered={false} style={{ marginTop: "20px" }}>
+          {loading ? (
+            <Spin />
+          ) : (
+            <Table
+              columns={columns}
+              dataSource={diagnosticos}
+              rowKey="id"
+              pagination={{ pageSize: 4 }} // Configura la paginación para mostrar 5 registros por página
+            />
+          )}
+        </Card>
+      </div>
     </div>
   );
 };
