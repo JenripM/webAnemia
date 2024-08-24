@@ -4,6 +4,8 @@ import axios from 'axios';
 import HistorialGrafico from '../dieta/DietaChart';
 import FrequencyChart from '../dieta/FrecuenciaPromedioChart';
 import { useSession } from 'next-auth/react';
+import FechaSelector from '../dieta/FechaSelector';
+
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
 
@@ -67,24 +69,19 @@ const HistorialPredicciones = () => {
     setFechaInicio(fechaInicio);
     setFechaFin(fechaFin);
     // Utilizar las fechas seleccionadas en el abuelo
-    console.log('Fechas seleccionadas:', fechaInicio, fechaFin);
   };
 
 
   useEffect(() => {
     const fetchPacientes = async () => {
-      setLoading(true);
       try {
         if (session && session.idApoderado) {
           const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
-          console.log(response.data);
           setPacientes(response.data);
         }
       } catch (error) {
         console.error('Error fetching pacientes:', error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchPacientes();
@@ -101,29 +98,27 @@ const HistorialPredicciones = () => {
   };
 
   useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      let urlParams = `idPaciente=${selectedPaciente}`;
+    const fetchData = async () => {
+      try {
+        let urlParams = `idPaciente=${selectedPaciente}`;
 
-      if (fechaInicio) {
-        const fechaInicioString = `${fechaInicio.getFullYear()}-${String(fechaInicio.getMonth() + 1).padStart(2, '0')}-${String(fechaInicio.getDate()).padStart(2, '0')}`;
-        urlParams += `&fechaInicio=${fechaInicioString}`;
-      }
+        if (fechaInicio) {
+          const fechaInicioString = fechaInicio.toISOString().split('T')[0];
+          urlParams += `&fechaInicio=${fechaInicioString}`;
+        }
 
-      if (fechaFin) {
-        const fechaFinString = `${fechaFin.getFullYear()}-${String(fechaFin.getMonth() + 1).padStart(2, '0')}-${String(fechaFin.getDate()).padStart(2, '0')}`;
-        urlParams += `&fechaFin=${fechaFinString}`;
-      }
+        if (fechaFin) {
+          const fechaFinString = fechaFin.toISOString().split('T')[0];
+          urlParams += `&fechaFin=${fechaFinString}`;
+        }
 
-      const response = await axios.get(`${url}/dietas/historial/?${urlParams}`);
-      setDietaData(response.data.dietas);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const response = await axios.get(`${url}/dietas/historial/?${urlParams}`);
+        console.log(`${url}/dietas/historial/?${urlParams}`)
+        setDietaData(response.data.dietas);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } 
+    };
 
   if (selectedPaciente) {
     fetchData();
@@ -166,11 +161,19 @@ const HistorialPredicciones = () => {
                 {/* <ChartFrecuencias data={dietaData}/> */}
                 {selectedPaciente && (
                   <div>
-                    {/* <ChartFrecuencias data={dietaData}/> */}
-                    <HistorialGrafico dietas={dietaData} onFechaChange={handleFechaChange}/>
-                    <FrequencyChart data={dietaData}/>
+                    {dietaData && dietaData.length > 0 ? (
+                      <>
+                        {/* <ChartFrecuencias data={dietaData}/> */}
+                        <FechaSelector onFechaChange={handleFechaChange}/>
+                        <HistorialGrafico dietas={dietaData}/>
+                        <FrequencyChart data={dietaData} />
+                      </>
+                    ) : (
+                      <div>No hay datos disponibles para graficar</div>
+                    )}
                   </div>
                 )}
+
             </div>
           )}
         </TabPane>

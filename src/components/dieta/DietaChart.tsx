@@ -40,32 +40,29 @@ interface Paciente {
   
   // Define la interfaz para los datos que recibe el componente
   interface HistorialGraficoProps {
-    dietas: Dieta[];
-    onFechaChange: (fechaInicio: Date, fechaFin: Date) => void;
+    dietas: Dieta[]
   }
   
 // Registra los componentes de Chart.js que usarás
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
-const HistorialGrafico: React.FC<HistorialGraficoProps> = ({ dietas, onFechaChange }) => {
-  // Verifica el tipo de datos y su contenido
-  const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
-  const [fechaFin, setFechaFin] = useState<Date | null>(null);
+const HistorialGrafico: React.FC<HistorialGraficoProps> = ({ dietas}) => {
+  // // Verifica el tipo de datos y su contenido
+  // const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
+  // const [fechaFin, setFechaFin] = useState<Date | null>(null);
 
-  const handleFechaChange = (fechaInicio: Date, fechaFin: Date) => {
-    setFechaInicio(fechaInicio);
-    setFechaFin(fechaFin);
-    onFechaChange(fechaInicio, fechaFin); // Pasar fechas al abuelo
-  };
+  // const handleFechaChange = (fechaInicio: Date, fechaFin: Date) => {
+  //   setFechaInicio(fechaInicio);
+  //   setFechaFin(fechaFin);
+  //   onFechaChange(fechaInicio, fechaFin); // Pasar fechas al abuelo
+  // };
 
 
-  const data = dietas;
-  console.log('Tipo de data:', Array.isArray(data));
-  console.log('Contenido de data:', data);
-
-  if (!data || !Array.isArray(data)) {
-    return <div>No hay datos disponibles para mostrar.</div>;
+  if (!dietas || dietas.length === 0) {
+    return <div>No hay datos a mostrar, en el rango de fechas indicado.</div>;
   }
+  
+  const data = dietas;
 
   const labels = data.map(d => d.created_at.slice(0, 10)); // Fechas
 
@@ -86,7 +83,6 @@ const HistorialGrafico: React.FC<HistorialGraficoProps> = ({ dietas, onFechaChan
   return (
     <div className="bg-white p-4">
       <h2 className="font-medium text-lg mb-4">Resultados de probabilidad de Anemia:</h2>
-      <FechaSelector onFechaChange={handleFechaChange}/>
       <Line
         data={chartData}
         options={{

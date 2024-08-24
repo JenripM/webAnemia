@@ -21,7 +21,7 @@ interface FrequencyChartProps {
 const FrequencyChart: React.FC<FrequencyChartProps> = ({ data }) => {
   // Calcula la frecuencia promedio de cada variable
   if (!data || data.length === 0) {
-    return <div>No data available</div>;
+    return <div>No hay datos a mostrar, en el rango de fechas indicado.</div>;
   }
   
   const avgFrequencies: { [key: string]: number } = {};
