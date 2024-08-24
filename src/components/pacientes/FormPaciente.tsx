@@ -5,7 +5,8 @@ import { useSession } from 'next-auth/react';
 import axios from "axios";
 import { PacientesContext } from "@/providers/pacientesContext";
 
-const url = "https://apianemia.onrender.com";
+// const url = 'https://apianemia.onrender.com';
+const url = 'http://127.0.0.1:8000'
 const { Option } = Select;
 
 const formItemLayout = {
