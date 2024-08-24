@@ -23,6 +23,7 @@ const handler = NextAuth({
                     const response = await axios.post("http://127.0.0.1:8000/auth/login/google", {
 
                     // const response = await axios.post("https://apianemia.onrender.com/auth/login/google", {
+
                         nombre: profile?.name,       // Campo esperado por la API
                         access_token: account.access_token, // Campo esperado por la API
                     });
@@ -35,6 +36,7 @@ const handler = NextAuth({
                     const responseApoderadoByUsuario = await axios.get(`http://127.0.0.1:8000/apoderados/usuario/${userId}`);
 
                     // const responseApoderadoByUsuario = await axios.get(`https://apianemia.onrender.com/apoderados/usuario/${userId}`);
+
                     console.log("API response for Apoderado by Usuario:", responseApoderadoByUsuario.data);
 
                     token.idApoderado = responseApoderadoByUsuario.data.id;
