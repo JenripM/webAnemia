@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Select, Radio, Checkbox, Card } from 'antd';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Button, Form, Input, Select, Radio, Checkbox, Card } from "antd";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
-const url = "https://apianemia.onrender.com";
+const url = "http://127.0.0.1:8000";
 const { Option } = Select;
 
 const formItemLayout = {
@@ -30,24 +31,36 @@ const tailFormItemLayout = {
 };
 
 const FormAnemia: React.FC = () => {
-  const [patients, setPatients] = useState<Array<{ id: string, nombre: string, dni: string, distrito: string }>>([]);
+  const [patients, setPacientes] = useState<
+    Array<{ id: string; nombre: string; dni: string; distrito: string }>
+  >([]);
+  const [selectedPaciente, setSelectedPaciente] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { data: session } = useSession();
+
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchPacientes = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(`${url}/pacientes`);
-        setPatients(response.data);
+        if (session && session.idApoderado) {
+          const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
+          console.log(response.data);
+          setPacientes(response.data);
+        }
       } catch (error) {
-        console.error('Error fetching patients:', error);
+        console.error('Error fetching pacientes:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchPatients();
-  }, []);
+    fetchPacientes();
+  }, [session]);
 
   const handlePatientChange = async (value: string) => {
-    const patient = patients.find(patient => patient.id === value);
+    const patient = patients.find((patient) => patient.id === value);
     if (patient) {
       form.setFieldsValue({
         dni: patient.dni,
@@ -58,15 +71,20 @@ const FormAnemia: React.FC = () => {
   const handleSubmit = async (values: any) => {
     const formattedValues = {
       ...values,
-      fecha_nacimiento: values.fecha_nacimiento ? values.fecha_nacimiento.toISOString().split('T')[0] : undefined,
+      fecha_nacimiento: values.fecha_nacimiento
+        ? values.fecha_nacimiento.toISOString().split("T")[0]
+        : undefined,
     };
 
     try {
-      const response = await axios.post(`${url}/pacientes/apoderado/1/create`, formattedValues);
-      console.log('Respuesta de la API:', response.data);
+      const response = await axios.post(
+        `${url}/pacientes/apoderado/1/create`,
+        formattedValues
+      );
+      console.log("Respuesta de la API:", response.data);
       form.resetFields(); // Clear the form fields
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -85,29 +103,30 @@ const FormAnemia: React.FC = () => {
       const response = await axios.post(`${url}/predict/diagnostico`, data);
       form.setFieldsValue({ resultado_prediccion: response.data.diagnostico });
     } catch (error) {
-      console.error('Error predicting diagnosis:', error);
+      console.error("Error predicting diagnosis:", error);
     }
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <Card
         title="Registrar Predicción de Diagnóstico"
         bordered={false}
-        style={{ width: '100%' }}
+        style={{ width: "100%" }}
       >
-        <Form
-          {...formItemLayout}
-          form={form}
-          onFinish={handleSubmit}
-        >
+        <Form {...formItemLayout} form={form} onFinish={handleSubmit}>
           <Form.Item
             label="Nombre Completo:"
             name="nombre"
-            rules={[{ required: true, message: 'Seleccione el nombre completo del infante' }]}
+            rules={[
+              {
+                required: true,
+                message: "Seleccione el nombre completo del infante",
+              },
+            ]}
           >
-            <Select style={{ width: '100%' }} onChange={handlePatientChange}>
-              {patients.map(patient => (
+            <Select style={{ width: "100%" }} onChange={handlePatientChange}>
+              {patients.map((patient) => (
                 <Option key={patient.id} value={patient.id}>
                   {patient.nombre}
                 </Option>
@@ -115,60 +134,62 @@ const FormAnemia: React.FC = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item
-            label="DNI:"
-            name="dni"
-          >
+          <Form.Item label="DNI:" name="dni">
             <Input readOnly />
           </Form.Item>
 
-       
           <Form.Item
             label="Peso en kg:"
             name="peso"
-            rules={[{ required: true, message: 'Ingresar el peso en kg' }]}
+            rules={[{ required: true, message: "Ingresar el peso en kg" }]}
           >
-            <Input type="number" style={{ width: '100%' }} />
+            <Input type="number" style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
             label="Talla en cm:"
             name="talla"
-            rules={[{ required: true, message: 'Ingresar la talla en cm' }]}
+            rules={[{ required: true, message: "Ingresar la talla en cm" }]}
           >
-            <Input type="number" style={{ width: '100%' }} />
+            <Input type="number" style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
             label="Hemoglobina:"
             name="hemoglobina"
-            rules={[{ required: true, message: 'Ingresar el nivel de hemoglobina' }]}
+            rules={[
+              { required: true, message: "Ingresar el nivel de hemoglobina" },
+            ]}
           >
-            <Input type="number" step="0.1" style={{ width: '100%' }} />
+            <Input type="number" step="0.1" style={{ width: "100%" }} />
           </Form.Item>
 
-     <Form.Item
-  style={{ marginBottom: '16px' }}
->
-  <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginLeft: '150px'}}>
-    <Form.Item
-      name="control_desarrollo"
-      valuePropName="checked"
-      style={{ marginBottom: '0' }}
-    >
-      <Checkbox>Control de desarrollo y crecimiento</Checkbox>
-    </Form.Item>
+          <Form.Item style={{ marginBottom: "16px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "40px",
+                marginLeft: "150px",
+              }}
+            >
+              <Form.Item
+                name="control_desarrollo"
+                valuePropName="checked"
+                style={{ marginBottom: "0" }}
+              >
+                <Checkbox>Control de desarrollo y crecimiento</Checkbox>
+              </Form.Item>
 
-    <Form.Item
-      name="suplementacion"
-      valuePropName="checked"
-      style={{ marginBottom: '0' }}
-    >
-      <Checkbox>Suplementación</Checkbox>
-    </Form.Item>
-  </div>
-</Form.Item>
-
+              <Form.Item
+                name="suplementacion"
+                valuePropName="checked"
+                style={{ marginBottom: "0" }}
+              >
+                <Checkbox>Suplementación</Checkbox>
+              </Form.Item>
+            </div>
+          </Form.Item>
 
           <Form.Item
             label="Resultado de predicción:"
@@ -180,12 +201,15 @@ const FormAnemia: React.FC = () => {
           <Form.Item {...tailFormItemLayout}>
             <Button
               type="primary"
-              style={{ backgroundColor: 'black', color: 'white', marginRight: '10px' }}
+              style={{
+                backgroundColor: "black",
+                color: "white",
+                marginRight: "10px",
+              }}
               onClick={handlePredict}
             >
               Predecir
             </Button>
-        
           </Form.Item>
         </Form>
       </Card>
