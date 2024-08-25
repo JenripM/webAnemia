@@ -10,6 +10,7 @@ import SelectPacienteHistorial from "../tipoanemia/PacienteSelector";
 import HistorialPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
 import HistorialDiagnosticoPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
 import PacienteSelector from "../tipoanemia/PacienteSelector";
+import FiltroDiagnostico from "../tipoanemia/FiltroDiagnostico";
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
 
@@ -147,17 +148,9 @@ const HistorialPredicciones = () => {
           {/* Contenido para el tipo de pronóstico 1 */}
           <p>Contenido del pronóstico 1.</p>
 
-          <div
-           
-          >
-            <div style={{ width: "100%" }}>
-              <PacienteSelector onPacienteChange={handlePacienteChange2} />
-            </div>
-            <div style={{ width: "100%" }}>
-              {selectedPacienteId && (
-                <HistorialDiagnosticoPaciente pacienteId={selectedPacienteId} />
-              )}
-            </div>
+          <div>
+            <PacienteSelector onPacienteChange={handlePacienteChange2} />
+            {selectedPacienteId && <FiltroDiagnostico pacienteId={selectedPacienteId} />}
           </div>
         </TabPane>
         <TabPane tab="Probabilidad en base a dieta" key="2">
