@@ -33,7 +33,7 @@ export const data = [
   {
     title: "Historial",
     icon: <ProjectIcon />,
-    link: "/admin/time-manage",
+    link: "/guest/historial",
   },
   {
     title: "Usuarios",

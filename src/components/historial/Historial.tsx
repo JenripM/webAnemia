@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Tabs, List, Select} from 'antd';
-import axios from 'axios';
-import HistorialGrafico from '../dieta/DietaChart';
-import FrequencyChart from '../dieta/FrecuenciaPromedioChart';
-import { useSession } from 'next-auth/react';
-import FechaSelector from '../dieta/FechaSelector';
-
+import React, { useState, useEffect } from "react";
+import { Tabs, List, Select } from "antd";
+import axios from "axios";
+import HistorialGrafico from "../dieta/DietaChart";
+import FrequencyChart from "../dieta/FrecuenciaPromedioChart";
+import { useSession } from "next-auth/react";
+import FechaSelector from "../dieta/FechaSelector";
+import HistorialDiagnosticos from "../tipoanemia/HistorialDiagnosticoPaciente";
+import SelectPacienteHistorial from "../tipoanemia/PacienteSelector";
+import HistorialPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
+import HistorialDiagnosticoPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
+import PacienteSelector from "../tipoanemia/PacienteSelector";
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
-
 
 const { TabPane } = Tabs;
 
@@ -49,14 +52,14 @@ interface Dieta {
 }
 
 // const url = 'https://apianemia.onrender.com';
-const url = 'http://127.0.0.1:8000'
-
+const url = "http://127.0.0.1:8000";
 
 const HistorialPredicciones = () => {
+  const [pacientes, setPacientes] = useState<{ id: number; nombre: string }[]>(
+    []
+  );
 
-  const [pacientes, setPacientes] = useState<{ id: number; nombre: string }[]>([]);
-
-  const [activeTab, setActiveTab] = useState('1'); // Estado para controlar la pestaña activa
+  const [activeTab, setActiveTab] = useState("1"); // Estado para controlar la pestaña activa
   const [dietaData, setDietaData] = useState([]);
   const [loading, setLoading] = useState(false); // Estado para manejar el loading
   const [selectedPaciente, setSelectedPaciente] = useState<number | null>(null);
@@ -71,22 +74,22 @@ const HistorialPredicciones = () => {
     // Utilizar las fechas seleccionadas en el abuelo
   };
 
-
   useEffect(() => {
     const fetchPacientes = async () => {
       try {
         if (session && session.idApoderado) {
-          const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
+          const response = await axios.get(
+            `${url}/pacientes/apoderado/${session.idApoderado}`
+          );
           setPacientes(response.data);
         }
       } catch (error) {
-        console.error('Error fetching pacientes:', error);
-      } 
+        console.error("Error fetching pacientes:", error);
+      }
     };
 
     fetchPacientes();
   }, [session]);
-
 
   const handleTabChange = (key: string) => {
     setActiveTab(key);
@@ -103,27 +106,38 @@ const HistorialPredicciones = () => {
         let urlParams = `idPaciente=${selectedPaciente}`;
 
         if (fechaInicio) {
-          const fechaInicioString = fechaInicio.toISOString().split('T')[0];
+          const fechaInicioString = fechaInicio.toISOString().split("T")[0];
           urlParams += `&fechaInicio=${fechaInicioString}`;
         }
 
         if (fechaFin) {
-          const fechaFinString = fechaFin.toISOString().split('T')[0];
+          const fechaFinString = fechaFin.toISOString().split("T")[0];
           urlParams += `&fechaFin=${fechaFinString}`;
         }
 
-        const response = await axios.get(`${url}/dietas/historial/?${urlParams}`);
-        console.log(`${url}/dietas/historial/?${urlParams}`)
+        const response = await axios.get(
+          `${url}/dietas/historial/?${urlParams}`
+        );
+        console.log(`${url}/dietas/historial/?${urlParams}`);
         setDietaData(response.data.dietas);
       } catch (error) {
-        console.error('Error fetching data:', error);
-      } 
+        console.error("Error fetching data:", error);
+      }
     };
 
-  if (selectedPaciente) {
-    fetchData();
-  }
-}, [fechaInicio, fechaFin, selectedPaciente]);
+    if (selectedPaciente) {
+      fetchData();
+    }
+  }, [fechaInicio, fechaFin, selectedPaciente]);
+
+  const [selectedPacienteId, setSelectedPacienteId] = useState<string | null>(
+    null
+  );
+
+  const handlePacienteChange2 = (id: string) => {
+    console.log("Paciente seleccionado:", id); // Mensaje de depuración
+    setSelectedPacienteId(id);
+  };
 
   return (
     <div className="bg-white p-4">
@@ -132,6 +146,19 @@ const HistorialPredicciones = () => {
         <TabPane tab="Prediccion Anemia" key="1">
           {/* Contenido para el tipo de pronóstico 1 */}
           <p>Contenido del pronóstico 1.</p>
+
+          <div
+           
+          >
+            <div style={{ width: "100%" }}>
+              <PacienteSelector onPacienteChange={handlePacienteChange2} />
+            </div>
+            <div style={{ width: "100%" }}>
+              {selectedPacienteId && (
+                <HistorialDiagnosticoPaciente pacienteId={selectedPacienteId} />
+              )}
+            </div>
+          </div>
         </TabPane>
         <TabPane tab="Probabilidad en base a dieta" key="2">
           {/* Contenido para el tipo de pronóstico 2 */}
@@ -139,41 +166,46 @@ const HistorialPredicciones = () => {
             <p>Cargando datos...</p>
           ) : (
             <div>
-                <h1>Historial de Predicciones</h1>
-                <div style={{paddingRight: '20px', paddingLeft: '20px'}}>
-                  <p className='py-4 font-medium'>Elegir paciente</p>
-                  <Select
-                    style={{ width: '100%'}}
-                    placeholder="Selecciona un paciente"
-                    loading={loading}
-                    onChange={handlePacienteChange}
-                    value={selectedPaciente ?? undefined} 
-                    className={!selectedPaciente && error ? 'ant-select-error' : ''}
-                  >
-                    {pacientes.map(paciente => (
-                      <Option key={paciente.id} value={paciente.id}>
-                        {paciente.nombre}
-                      </Option>
-                    ))}
-                  </Select>
-                  {!selectedPaciente && error && <div style={{ color: 'red', fontSize: '12px' }}>Por favor, selecciona un paciente.</div>}
-                </div>
-                {/* <ChartFrecuencias data={dietaData}/> */}
-                {selectedPaciente && (
-                  <div>
-                    {dietaData && dietaData.length > 0 ? (
-                      <>
-                        {/* <ChartFrecuencias data={dietaData}/> */}
-                        <FechaSelector onFechaChange={handleFechaChange}/>
-                        <HistorialGrafico dietas={dietaData}/>
-                        <FrequencyChart data={dietaData} />
-                      </>
-                    ) : (
-                      <div>No hay datos disponibles para graficar</div>
-                    )}
+              <h1>Historial de Predicciones</h1>
+              <div style={{ paddingRight: "20px", paddingLeft: "20px" }}>
+                <p className="py-4 font-medium">Elegir paciente</p>
+                <Select
+                  style={{ width: "100%" }}
+                  placeholder="Selecciona un paciente"
+                  loading={loading}
+                  onChange={handlePacienteChange}
+                  value={selectedPaciente ?? undefined}
+                  className={
+                    !selectedPaciente && error ? "ant-select-error" : ""
+                  }
+                >
+                  {pacientes.map((paciente) => (
+                    <Option key={paciente.id} value={paciente.id}>
+                      {paciente.nombre}
+                    </Option>
+                  ))}
+                </Select>
+                {!selectedPaciente && error && (
+                  <div style={{ color: "red", fontSize: "12px" }}>
+                    Por favor, selecciona un paciente.
                   </div>
                 )}
-
+              </div>
+              {/* <ChartFrecuencias data={dietaData}/> */}
+              {selectedPaciente && (
+                <div>
+                  {dietaData && dietaData.length > 0 ? (
+                    <>
+                      {/* <ChartFrecuencias data={dietaData}/> */}
+                      <FechaSelector onFechaChange={handleFechaChange} />
+                      <HistorialGrafico dietas={dietaData} />
+                      <FrequencyChart data={dietaData} />
+                    </>
+                  ) : (
+                    <div>No hay datos disponibles para graficar</div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </TabPane>
