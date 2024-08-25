@@ -38,8 +38,6 @@ const Content = (props: ChildrenProps) => {
 export function DashboardLayout(props: ChildrenProps) {
 
   return (
-    <Provider>
       <Content>{props.children}</Content>
-    </Provider>
   );
 }

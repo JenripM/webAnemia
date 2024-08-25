@@ -1,7 +1,9 @@
 "use-client";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import { useDashboardContext } from "./Provider";
+import { Button } from "antd";
+import { CiLogout  } from 'react-icons/ci'
 interface CustomSession {
   user?: {
       name?: string | null;
@@ -64,14 +66,22 @@ export function TopBar() {
               </div>
             </div>
           </div>
-          <div className="relative ml-5 flex w-1/4 items-center justify-end p-1 sm:right-auto sm:mr-0">
-            <h1>{session?.user?.name}</h1><br />
+          <div className="relative ml-5 flex w-1/4  gap-2 items-center justify-end p-1 sm:right-auto sm:mr-0">
+              <h1 className="whitespace-nowrap">{session?.user?.name}</h1>
               <img
-                alt="Jonathan Ilunga"
+                alt="Usuario"
                 src={session?.user?.image || ""}
                 className="mx-auto ml-2 h-10 w-10 rounded-full object-cover"
               />
-          
+              <Button
+                danger
+                onClick={() => signOut()}
+              >
+                <CiLogout />
+                <span className="sr-only">
+                  Cerrar sesión
+                </span>
+              </Button>
           </div>
         </div>
       </div>
