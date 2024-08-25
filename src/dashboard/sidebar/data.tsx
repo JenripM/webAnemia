@@ -8,7 +8,7 @@ export const data = [
   {
     title: "Home",
     icon: <HomeIcon />,
-    link: "/guest/reporte",
+    link: "/guest/dashboard",
   },
   {
     title: "Registrar paciente",
