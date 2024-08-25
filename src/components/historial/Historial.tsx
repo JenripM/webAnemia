@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Tabs, List, Select } from "antd";
+import { Tabs, Select } from "antd";
 import axios from "axios";
 import HistorialGrafico from "../dieta/DietaChart";
 import FrequencyChart from "../dieta/FrecuenciaPromedioChart";
 import { useSession } from "next-auth/react";
 import FechaSelector from "../dieta/FechaSelector";
-import HistorialDiagnosticos from "../tipoanemia/HistorialDiagnosticoPaciente";
-import SelectPacienteHistorial from "../tipoanemia/PacienteSelector";
-import HistorialPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
-import HistorialDiagnosticoPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
-import PacienteSelector from "../tipoanemia/PacienteSelector";
 import FiltroDiagnostico from "../tipoanemia/FiltroDiagnostico";
 import DiagnosticoGrafico from "../tipoanemia/DiagnosticoGrafico";
+import NivelAnemiaChart from "../tipoanemia/NivelAnemiaChart";
+import PacienteSelector from "../tipoanemia/PacienteSelector";
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
 
@@ -69,6 +66,7 @@ const HistorialPredicciones = () => {
   const { data: session } = useSession();
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
   const [fechaFin, setFechaFin] = useState<Date | null>(null);
+  const [nivelAnemia, setNivelAnemia] = useState<string | null>(null);
 
   const handleFechaChange = (fechaInicio: Date, fechaFin: Date) => {
     setFechaInicio(fechaInicio);
@@ -141,6 +139,9 @@ const HistorialPredicciones = () => {
     setSelectedPacienteId(id);
   };
 
+  const handleNivelAnemiaChange = (value: string) => {
+    setNivelAnemia(value);
+  };
   return (
     <div className="bg-white p-4">
       <h1 className="font-medium text-xl mb-4">Historial de Pronósticos</h1>
@@ -150,29 +151,34 @@ const HistorialPredicciones = () => {
           <h1>Historial de Diagnosticos</h1>
 
           <div>
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Selecciona un paciente"
-              loading={loading}
-              onChange={handlePacienteChange2}
-              value={selectedPacienteId ?? undefined}
-              className={!selectedPacienteId && error ? "ant-select-error" : ""}
-            >
-              {pacientes.map((paciente) => (
-                <Option key={paciente.id} value={paciente.id}>
-                  {paciente.nombre}
-                </Option>
-              ))}
-            </Select>
-            {!selectedPacienteId && error && (
-              <div style={{ color: "red", fontSize: "12px" }}>
-                Por favor, selecciona un paciente.
-              </div>
+            <PacienteSelector onPacienteChange={handlePacienteChange2} />
+            {selectedPacienteId && (
+              <Select
+                style={{ width: "100%", marginTop: "10px" }}
+                placeholder="Selecciona nivel de anemia"
+                onChange={handleNivelAnemiaChange}
+              >
+                <Option value="anemia_severa">Anemia Severa</Option>
+                <Option value="anemia_moderada">Anemia Moderada</Option>
+                <Option value="anemia_leve">Anemia Leve</Option>
+                <Option value="normal">Normal</Option>
+              </Select>
             )}
-            {selectedPacienteId && <FiltroDiagnostico pacienteId={selectedPacienteId} />}
+            <FiltroDiagnostico
+              pacienteId={selectedPacienteId?.toString() ?? ""}
+              nivelAnemia={nivelAnemia}
+              onDataChange={(data) => console.log(data)} // Manejar los datos como se necesite
+            />
             
+            
+            {selectedPacienteId && nivelAnemia && (
+              <NivelAnemiaChart pacienteId={selectedPacienteId.toString()} nivelAnemia={nivelAnemia} />
+            )}
+
             {selectedPacienteId && <DiagnosticoGrafico pacienteId={selectedPacienteId.toString()} />}
+
           </div>
+          
         </TabPane>
         <TabPane tab="Probabilidad en base a dieta" key="2">
           {/* Contenido para el tipo de pronóstico 2 */}

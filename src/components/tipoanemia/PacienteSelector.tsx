@@ -20,7 +20,7 @@ const PacienteSelector: React.FC<{ onPacienteChange: (id: string) => void }> = (
         const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
         setPacientes(response.data);
       } catch (error) {
-        console.error('Error fetching pacientes:', error);
+        console.error("Error fetching pacientes:", error);
       } finally {
         setLoading(false);
       }

@@ -7,9 +7,12 @@ import axios from "axios";
 const url = "http://127.0.0.1:8000";
 const { Option } = Select;
 
-const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => {
+const FiltroDiagnostico: React.FC<{
+  pacienteId: string;
+  nivelAnemia: string | null;
+  onDataChange: (data: any[]) => void;
+}> = ({ pacienteId, nivelAnemia, onDataChange }) => {
   const [nivelesAnemia, setNivelesAnemia] = useState<any[]>([]);
-  const [selectedNivel, setSelectedNivel] = useState<number | null>(null);
   const [diagnosticos, setDiagnosticos] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -27,28 +30,27 @@ const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => 
   }, []);
 
   useEffect(() => {
-    if (pacienteId && selectedNivel !== null) {
+    if (pacienteId && nivelAnemia) {
       const fetchDiagnosticos = async () => {
         setLoading(true);
         try {
           const response = await axios.get(`${url}/diagnosticos/estadisticas/paciente/${pacienteId}`);
-          console.log("Diagnosticos fetched:", response.data); // Mensaje de depuración
+          console.log("Diagnosticos fetched:", response.data);
 
-          // Obtener los datos según el nivel seleccionado
           const { anemia_severa, anemia_moderada, anemia_leve, normal } = response.data;
           let filteredDiagnosticos = [];
 
-          switch (selectedNivel) {
-            case 1:
+          switch (nivelAnemia) {
+            case "anemia_severa":
               filteredDiagnosticos = anemia_severa.diagnosticos.data;
               break;
-            case 2:
-              filteredDiagnosticos = anemia_leve.diagnosticos.data;
-              break;
-            case 3:
+            case "anemia_moderada":
               filteredDiagnosticos = anemia_moderada.diagnosticos.data;
               break;
-            case 4:
+            case "anemia_leve":
+              filteredDiagnosticos = anemia_leve.diagnosticos.data;
+              break;
+            case "normal":
               filteredDiagnosticos = normal.diagnosticos.data;
               break;
             default:
@@ -56,6 +58,7 @@ const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => 
           }
 
           setDiagnosticos(filteredDiagnosticos);
+          onDataChange(filteredDiagnosticos);
         } catch (error) {
           console.error("Error fetching diagnosticos:", error);
         } finally {
@@ -65,11 +68,7 @@ const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => 
 
       fetchDiagnosticos();
     }
-  }, [pacienteId, selectedNivel]);
-
-  const handleChangeNivel = (value: number) => {
-    setSelectedNivel(value);
-  };
+  }, [pacienteId, nivelAnemia]);
 
   const columns = [
     {
@@ -107,19 +106,7 @@ const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => 
   ];
 
   return (
-    <Card title="Seleccionar Nivel de Anemia" bordered={false}>
-      <Select
-        style={{ width: "100%", marginBottom: "16px" }}
-        placeholder="Seleccionar nivel de anemia"
-        onChange={handleChangeNivel}
-        allowClear
-      >
-        {nivelesAnemia.map((nivel) => (
-          <Option key={nivel.id} value={nivel.id}>
-            {nivel.nivel}
-          </Option>
-        ))}
-      </Select>
+    <Card title="Diagnósticos" bordered={false}>
       {loading ? (
         <Spin />
       ) : (
@@ -127,7 +114,7 @@ const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => 
           columns={columns}
           dataSource={diagnosticos}
           rowKey="id"
-          pagination={{ pageSize: 4 }} // Configura la paginación para mostrar 4 registros por página
+          pagination={{ pageSize: 4 }}
         />
       )}
     </Card>
