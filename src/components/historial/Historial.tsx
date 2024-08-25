@@ -11,6 +11,7 @@ import HistorialPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
 import HistorialDiagnosticoPaciente from "../tipoanemia/HistorialDiagnosticoPaciente";
 import PacienteSelector from "../tipoanemia/PacienteSelector";
 import FiltroDiagnostico from "../tipoanemia/FiltroDiagnostico";
+import DiagnosticoGrafico from "../tipoanemia/DiagnosticoGrafico";
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
 
@@ -146,11 +147,31 @@ const HistorialPredicciones = () => {
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane tab="Prediccion Anemia" key="1">
           {/* Contenido para el tipo de pronóstico 1 */}
-          <p>Contenido del pronóstico 1.</p>
+          <h1>Historial de Diagnosticos</h1>
 
           <div>
-            <PacienteSelector onPacienteChange={handlePacienteChange2} />
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Selecciona un paciente"
+              loading={loading}
+              onChange={handlePacienteChange2}
+              value={selectedPacienteId ?? undefined}
+              className={!selectedPacienteId && error ? "ant-select-error" : ""}
+            >
+              {pacientes.map((paciente) => (
+                <Option key={paciente.id} value={paciente.id}>
+                  {paciente.nombre}
+                </Option>
+              ))}
+            </Select>
+            {!selectedPacienteId && error && (
+              <div style={{ color: "red", fontSize: "12px" }}>
+                Por favor, selecciona un paciente.
+              </div>
+            )}
             {selectedPacienteId && <FiltroDiagnostico pacienteId={selectedPacienteId} />}
+            
+            {selectedPacienteId && <DiagnosticoGrafico pacienteId={selectedPacienteId.toString()} />}
           </div>
         </TabPane>
         <TabPane tab="Probabilidad en base a dieta" key="2">

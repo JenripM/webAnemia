@@ -107,7 +107,7 @@ const FiltroDiagnostico: React.FC<{ pacienteId: string }> = ({ pacienteId }) => 
   ];
 
   return (
-    <Card title="Filtrar Diagnósticos por Nivel de Anemia" bordered={false}>
+    <Card title="Seleccionar Nivel de Anemia" bordered={false}>
       <Select
         style={{ width: "100%", marginBottom: "16px" }}
         placeholder="Seleccionar nivel de anemia"
