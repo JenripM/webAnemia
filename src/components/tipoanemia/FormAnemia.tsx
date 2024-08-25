@@ -50,7 +50,7 @@ const FormAnemia: React.FC = () => {
           setPacientes(response.data);
         }
       } catch (error) {
-        console.error('Error fetching pacientes:', error);
+        console.error("Error fetching pacientes:", error);
       } finally {
         setLoading(false);
       }
