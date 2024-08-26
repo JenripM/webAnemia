@@ -9,6 +9,7 @@ import FiltroDiagnostico from "../tipoanemia/FiltroDiagnostico";
 import DiagnosticoGrafico from "../tipoanemia/DiagnosticoGrafico";
 import NivelAnemiaChart from "../tipoanemia/NivelAnemiaChart";
 import PacienteSelector from "../tipoanemia/PacienteSelector";
+import UltimoDiagnosticoCard from "../tipoanemia/UltimoDiagnosticoCard";
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
 
@@ -67,6 +68,7 @@ const HistorialPredicciones = () => {
   const [fechaInicio, setFechaInicio] = useState<Date | null>(null);
   const [fechaFin, setFechaFin] = useState<Date | null>(null);
   const [nivelAnemia, setNivelAnemia] = useState<string | null>(null);
+  const [ultimoDiagnostico, setUltimoDiagnostico] = useState(null);
 
   const handleFechaChange = (fechaInicio: Date, fechaFin: Date) => {
     setFechaInicio(fechaInicio);
@@ -144,41 +146,54 @@ const HistorialPredicciones = () => {
   };
   return (
     <div className="bg-white p-4">
-      <h1 className="font-medium text-xl mb-4">Historial de Pronósticos</h1>
+      <h1 className="mb-4 text-xl font-medium">Historial de Pronósticos</h1>
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <TabPane tab="Prediccion Anemia" key="1">
           {/* Contenido para el tipo de pronóstico 1 */}
           <h1>Historial de Diagnosticos</h1>
 
           <div>
-            <PacienteSelector onPacienteChange={handlePacienteChange2} />
-            {selectedPacienteId && (
-              <Select
-                style={{ width: "100%", marginTop: "10px" }}
-                placeholder="Selecciona nivel de anemia"
-                onChange={handleNivelAnemiaChange}
-              >
-                <Option value="anemia_severa">Anemia Severa</Option>
-                <Option value="anemia_moderada">Anemia Moderada</Option>
-                <Option value="anemia_leve">Anemia Leve</Option>
-                <Option value="normal">Normal</Option>
-              </Select>
-            )}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <PacienteSelector onPacienteChange={handlePacienteChange2} />
+                {selectedPacienteId && (
+                  <Select
+                    style={{ width: "100%", marginTop: "10px" }}
+                    placeholder="Selecciona nivel de anemia"
+                    onChange={handleNivelAnemiaChange}
+                  >
+                    <Option value="anemia_severa">Anemia Severa</Option>
+                    <Option value="anemia_moderada">Anemia Moderada</Option>
+                    <Option value="anemia_leve">Anemia Leve</Option>
+                    <Option value="normal">Normal</Option>
+                  </Select>
+                )}
+              </div>
+              <div className="-mt-10 mb-5">
+                {selectedPacienteId && (
+                  <UltimoDiagnosticoCard pacienteId={selectedPacienteId} />
+                )}
+              </div>
+            </div>
+
+
             <FiltroDiagnostico
               pacienteId={selectedPacienteId?.toString() ?? ""}
               nivelAnemia={nivelAnemia}
               onDataChange={(data) => console.log(data)} // Manejar los datos como se necesite
             />
-            
-            
+
             {selectedPacienteId && nivelAnemia && (
-              <NivelAnemiaChart pacienteId={selectedPacienteId.toString()} nivelAnemia={nivelAnemia} />
+              <NivelAnemiaChart
+                pacienteId={selectedPacienteId.toString()}
+                nivelAnemia={nivelAnemia}
+              />
             )}
 
-            {selectedPacienteId && <DiagnosticoGrafico pacienteId={selectedPacienteId.toString()} />}
-
+            {selectedPacienteId && (
+              <DiagnosticoGrafico pacienteId={selectedPacienteId.toString()} />
+            )}
           </div>
-          
         </TabPane>
         <TabPane tab="Probabilidad en base a dieta" key="2">
           {/* Contenido para el tipo de pronóstico 2 */}
