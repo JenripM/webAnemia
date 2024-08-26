@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   env: {
     BACKEND_URL: process.env.BACKEND_URL,
+    PRODUCTION: process.env.PRODUCTION,
   },
   // async redirects() {
   //   return [

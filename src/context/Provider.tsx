@@ -1,4 +1,5 @@
 "use client";
+import ChatProvider from "@/components/ui/chat/chat.context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "next-auth/react";
 
@@ -10,7 +11,9 @@ function Provider({ children }: Props) {
   return (
     <QueryClientProvider client={queryClient}>
         <SessionProvider>
-          {children}
+          <ChatProvider>
+            {children}
+          </ChatProvider>
         </SessionProvider>
       </QueryClientProvider>  
     );

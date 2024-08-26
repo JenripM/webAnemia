@@ -1,6 +1,9 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
+import { COOKIE_ACCESS_TOKEN } from "@/constants/cookies";
+import { cookies } from 'next/headers'
+import { config } from "@/lib/config";
 
 const handler = NextAuth({
     providers: [
@@ -28,6 +31,17 @@ const handler = NextAuth({
                         access_token: account.access_token, // Campo esperado por la API
                     });
                     console.log("API response:", response.data);
+
+                    // set token to cookies
+                    cookies().set({
+                        name: COOKIE_ACCESS_TOKEN,
+                        path: "/",
+                        sameSite: "strict",
+                        value: response.data.token,
+                        secure: config.production === "true",
+                        maxAge: 60 * 60 * 24 * 30,
+                        expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
+                    })
 
                     // Extraer el ID de la respuesta de la API
                     const userId = response.data.id;

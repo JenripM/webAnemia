@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import CountInput from './InputNumber';
-import { Form, Select, Button, Modal, List } from 'antd';
+import { Form, Select, Button, Modal, List, Spin } from 'antd';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
+import { useMutation } from '@tanstack/react-query';
+import { fetcher } from '@/lib/fetch/fetcher';
+import { SuggestionsResponse } from '@/types/Dieta/suggestions';
+import { spaceChildren } from 'antd/es/button';
 
 const { Option } = Select;
 
@@ -56,6 +60,8 @@ const FormDieta = () => {
     acc[variable] = 4;
     return acc;
   }, {} as FormData);
+  
+ 
 
   const [pacientes, setPacientes] = useState<{ id: number; nombre: string }[]>([]);
   const [values, setValues] = useState<FormData>(initialValues);
@@ -66,6 +72,22 @@ const FormDieta = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalContent, setModalContent] = useState<string[]>([]); // Cambiar a string[]
+
+  const suggestionsMutation = useMutation<SuggestionsResponse, Error, number>({
+    mutationFn: async (dietaID: number) => {
+      const response = await fetcher(`/dietas/recomendaciones/${dietaID}`)
+      if(response.ok){
+        return response.json()
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching pacientes:', error);
+      setModalContent([`Error: No se pudieron obtener las recomendaciones.`]);
+    },
+    onSuccess: (data) => {
+      setModalContent(data.suggestions);
+    }
+  })
 
   useEffect(() => {
     const fetchPacientes = async () => {
@@ -126,32 +148,20 @@ const FormDieta = () => {
       const dieta = response.data.dieta;
 
       let title = '';
+      setModalContent([]);
       let recommendations: string[] = [];
+
+      suggestionsMutation.mutate(dieta);
 
       switch (dieta) {
         case 1:
           title = 'Probabilidad Baja';
-          recommendations = [
-            'Aumenta el consumo de verduras y frutas.',
-            'Reduce la ingesta de azúcares y grasas saturadas.',
-            'Realiza ejercicio regularmente.'
-          ];
           break;
         case 2:
           title = 'Probabilidad Media';
-          recommendations = [
-            'Mantén una dieta equilibrada y variada.',
-            'Modera el consumo de alimentos procesados.',
-            'Aumenta la actividad física y reduce el estrés.'
-          ];
           break;
         case 3:
           title = 'Probabilidad Alta';
-          recommendations = [
-            'Consulta a un nutricionista para una dieta personalizada.',
-            'Evita completamente los azúcares añadidos y las grasas trans.',
-            'Incrementa el ejercicio aeróbico y la meditación.'
-          ];
           break;
         default:
           title = 'Resultado no reconocido';
@@ -159,7 +169,7 @@ const FormDieta = () => {
       }
 
       setModalTitle(title);
-      setModalContent(recommendations);
+      // setModalContent(recommendations);
       setIsModalVisible(true);
       
       // console.log('Respuesta de la API:', response.data);
@@ -242,16 +252,31 @@ const FormDieta = () => {
         ]}
       >
         <h1 className='font-medium text-xl mb-4'>{modalTitle}</h1>
-        <p className='mb-3'>Recomendaciones (contenido IA posiblemente)</p>
+        <p className='mb-3'>
+          {
+            suggestionsMutation.isPending && <span>Generando recomendaciones para tu resultado ...</span>
+          }
+          {
+            suggestionsMutation.isSuccess && <span>
+              {suggestionsMutation.data.message}
+            </span>
+          }
+        </p>
         <List
           bordered
           dataSource={modalContent}
+          loading={suggestionsMutation.isPending}
           renderItem={item => (
             <List.Item>
               {item}
             </List.Item>
           )}
         />
+        <p
+          className='text-neutral-500 text-xs'
+        >
+          Estas recomendaciones son generadas por una Inteligencia Artificial, para mayor precisión, consulta a un nutricionista.
+        </p>
       </Modal>
     </div>
     </div>

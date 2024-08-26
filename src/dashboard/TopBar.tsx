@@ -4,6 +4,8 @@ import { signOut, useSession } from "next-auth/react";
 import { useDashboardContext } from "./Provider";
 import { Button } from "antd";
 import { CiLogout  } from 'react-icons/ci'
+import ChatHistory from "@/components/ui/chat/chat-history";
+
 interface CustomSession {
   user?: {
       name?: string | null;
@@ -73,6 +75,7 @@ export function TopBar() {
                 src={session?.user?.image || ""}
                 className="mx-auto ml-2 h-10 w-10 rounded-full object-cover"
               />
+              <ChatHistory />
               <Button
                 danger
                 onClick={() => signOut()}
