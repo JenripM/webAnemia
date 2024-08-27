@@ -5,8 +5,9 @@ import { useSession } from "next-auth/react";
 import { DiagnosticResponse } from "@/types/Diagnostico";
 import { createDiagnosticConversation } from "../ui/chat/services";
 import { useChatContext } from "../ui/chat/chat.context";
+import { config } from "@/lib/config";
 
-const url = "http://127.0.0.1:8000";
+const url = config.backendUrl;
 const { Option } = Select;
 
 const formItemLayout = {

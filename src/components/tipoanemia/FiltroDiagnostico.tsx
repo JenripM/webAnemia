@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Select, Spin, Card, Table } from "antd";
 import axios from "axios";
+import { config } from "@/lib/config";
 
-const url = "http://127.0.0.1:8000";
+const url = config.backendUrl;
 const { Option } = Select;
 
 const FiltroDiagnostico: React.FC<{

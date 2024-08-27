@@ -10,6 +10,7 @@ import DiagnosticoGrafico from "../tipoanemia/DiagnosticoGrafico";
 import NivelAnemiaChart from "../tipoanemia/NivelAnemiaChart";
 import PacienteSelector from "../tipoanemia/PacienteSelector";
 import UltimoDiagnosticoCard from "../tipoanemia/UltimoDiagnosticoCard";
+import { config } from "@/lib/config";
 
 // import ChartFrecuencias from '../dieta/ChartFrecuencia';
 
@@ -52,7 +53,7 @@ interface Dieta {
 }
 
 // const url = 'https://apianemia.onrender.com';
-const url = "http://127.0.0.1:8000";
+// const url = "http://127.0.0.1:8000";
 
 const HistorialPredicciones = () => {
   const [pacientes, setPacientes] = useState<{ id: number; nombre: string }[]>(
@@ -81,7 +82,7 @@ const HistorialPredicciones = () => {
       try {
         if (session && session.idApoderado) {
           const response = await axios.get(
-            `${url}/pacientes/apoderado/${session.idApoderado}`
+            `${config.backendUrl}/pacientes/apoderado/${session.idApoderado}`
           );
           setPacientes(response.data);
         }
@@ -118,9 +119,9 @@ const HistorialPredicciones = () => {
         }
 
         const response = await axios.get(
-          `${url}/dietas/historial/?${urlParams}`
+          `${config.backendUrl}/dietas/historial/?${urlParams}`
         );
-        console.log(`${url}/dietas/historial/?${urlParams}`);
+        console.log(`${config.backendUrl}/dietas/historial/?${urlParams}`);
         setDietaData(response.data.dietas);
       } catch (error) {
         console.error("Error fetching data:", error);

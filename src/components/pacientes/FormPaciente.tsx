@@ -4,9 +4,10 @@ import { Flex } from "antd";
 import { useSession } from 'next-auth/react';
 import axios from "axios";
 import { PacientesContext } from "@/providers/pacientesContext";
+import { config } from "@/lib/config";
 
 // const url = 'https://apianemia.onrender.com';
-const url = 'http://127.0.0.1:8000'
+
 const { Option } = Select;
 
 const formItemLayout = {
@@ -61,10 +62,10 @@ const FormPaciente: React.FC<FormPacienteProps> = () => {
   
   useEffect(() => {
     // Función para obtener datos de la API
-    console.log(url);
+    console.log(config.backendUrl);
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get(`${url}/provincias`);
+        const response = await axios.get(`${config.backendUrl}/provincias`);
         setProvinces(response.data);
       } catch (error) {
         console.error("Error fetching provincias:", error);
@@ -77,7 +78,7 @@ const FormPaciente: React.FC<FormPacienteProps> = () => {
   const handleChangeProvincia = async (value: string) => {
     setProvinciaSelected(value); 
     try {
-      const response = await axios.get(`${url}/distritos/provincia/${value}`);
+      const response = await axios.get(`${config.backendUrl}/distritos/provincia/${value}`);
       setDistritos(response.data);
     } catch (error) {
       console.error('Error fetching distritos:', error);
@@ -98,7 +99,7 @@ const FormPaciente: React.FC<FormPacienteProps> = () => {
     console.log('Datos del formulario en JSON:', jsonData);
     try {
       if (session && session.idApoderado) {
-        const response = await axios.post(`${url}/pacientes/apoderado/${session.idApoderado}/create`, formattedValues);
+        const response = await axios.post(`${config.backendUrl}/pacientes/apoderado/${session.idApoderado}/create`, formattedValues);
         console.log('Respuesta de la API:', response.data);
         agregarPaciente(response.data);
         form.resetFields(); // Clear the form fields

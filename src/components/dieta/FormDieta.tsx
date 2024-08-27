@@ -9,6 +9,7 @@ import { SuggestionsResponse } from '@/types/Dieta/suggestions';
 import { useChatContext } from '../ui/chat/chat.context';
 import { createDietaConversation } from '../ui/chat/services';
 import { RESULTS_DIETA } from '@/types/Dieta/results';
+import { config } from '@/lib/config';
 
 const { Option } = Select;
 
@@ -55,7 +56,7 @@ const variablesInputName = [
 ];
 
 // const url = 'https://apianemia.onrender.com';
-const url = 'http://127.0.0.1:8000'
+// const url = config.backendUrl
 
 const FormDieta = () => {
   const initialValues: FormData = variablesInputName.reduce((acc, variable) => {
@@ -97,7 +98,7 @@ const FormDieta = () => {
       setLoading(true);
       try {
         if (session && session.idApoderado) {
-          const response = await axios.get(`${url}/pacientes/apoderado/${session.idApoderado}`);
+          const response = await axios.get(`${config.backendUrl}/pacientes/apoderado/${session.idApoderado}`);
           console.log(response.data);
           setPacientes(response.data);
         }
@@ -145,7 +146,7 @@ const FormDieta = () => {
 
     try {
       console.log('sss')
-      const response = await axios.post(`${url}/predict/dieta`, formData);
+      const response = await axios.post(`${config.backendUrl}/predict/dieta`, formData);
       
       //const response = await axios.post('/api/endpoint', { /* tu payload aquí */ });
       const dieta = response.data.dieta;
