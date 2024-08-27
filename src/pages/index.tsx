@@ -8,7 +8,7 @@ export default function HomePage() {
   const router = useRouter();
   useEffect(()=>{
     if(session.status === "authenticated"){
-      router.push("/guest/dashboard");
+      router.push("/guest/register");
     }
   }, [session.status])
 
