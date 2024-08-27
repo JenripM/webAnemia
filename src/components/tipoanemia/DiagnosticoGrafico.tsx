@@ -1,9 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { config } from "@/lib/config";
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface Diagnostico {
   dx_anemia: string;
@@ -28,7 +44,9 @@ interface DiagnosticoGraficoProps {
   pacienteId: string;
 }
 
-const DiagnosticoGrafico: React.FC<DiagnosticoGraficoProps> = ({ pacienteId }) => {
+const DiagnosticoGrafico: React.FC<DiagnosticoGraficoProps> = ({
+  pacienteId,
+}) => {
   const [data, setData] = useState<DiagnosticoData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -36,7 +54,9 @@ const DiagnosticoGrafico: React.FC<DiagnosticoGraficoProps> = ({ pacienteId }) =
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/diagnosticos/estadisticas/paciente/${pacienteId}`);
+        const response = await axios.get(
+          `${config.backendUrl}/diagnosticos/estadisticas/paciente/${pacienteId}`
+        );
         setData(response.data);
       } catch (error) {
         console.error("Error fetching diagnostico data:", error);
@@ -80,7 +100,10 @@ const DiagnosticoGrafico: React.FC<DiagnosticoGraficoProps> = ({ pacienteId }) =
   return (
     <div>
       <h2>Gráfico de Cantidad de Diagnósticos Segun Tipo de Anemia</h2>
-      <Line data={chartData} options={{ responsive: true, plugins: { legend: { position: "top" } } }} />
+      <Line
+        data={chartData}
+        options={{ responsive: true, plugins: { legend: { position: "top" } } }}
+      />
     </div>
   );
 };

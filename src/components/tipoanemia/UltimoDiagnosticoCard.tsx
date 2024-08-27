@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { config } from "@/lib/config";
 
 interface UltimoDiagnosticoCardProps {
   pacienteId: string;
 }
 
-const UltimoDiagnosticoCard: React.FC<UltimoDiagnosticoCardProps> = ({ pacienteId }) => {
+const UltimoDiagnosticoCard: React.FC<UltimoDiagnosticoCardProps> = ({
+  pacienteId,
+}) => {
   const [ultimoDiagnostico, setUltimoDiagnostico] = useState<any>(null);
 
   useEffect(() => {
     const fetchUltimoDiagnostico = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/diagnosticos/estadisticas/paciente/${pacienteId}`);
+        const response = await axios.get(
+          `${config.backendUrl}/diagnosticos/estadisticas/paciente/${pacienteId}`
+        );
         const data = response.data;
         let nivelAnemia = "";
         let ultimo = null;
@@ -61,18 +66,24 @@ const UltimoDiagnosticoCard: React.FC<UltimoDiagnosticoCardProps> = ({ pacienteI
 
   return (
     // eslint-disable-next-line tailwindcss/no-custom-classname
-    <div className="card p-4 bg-white shadow-lg rounded-lg max-w-sm mx-auto mt-6">
-    {ultimoDiagnostico ? (
-      <>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">Último Diagnóstico</h3>
-        <p className="text-gray-600 mb-2">Nivel de Anemia: <span className="font-medium">{ultimoDiagnostico.nivelAnemia}</span></p>
-        <p className="text-gray-500 text-sm">{tiempoTranscurrido(ultimoDiagnostico.fecha)}</p>
-      </>
-    ) : (
-      <p className="text-gray-500">No hay diagnósticos disponibles.</p>
-    )}
-  </div>
-  
+    <div className="card mx-auto mt-6 max-w-sm rounded-lg bg-white p-4 shadow-lg">
+      {ultimoDiagnostico ? (
+        <>
+          <h3 className="mb-2 text-xl font-semibold text-gray-800">
+            Último Diagnóstico
+          </h3>
+          <p className="mb-2 text-gray-600">
+            Nivel de Anemia:{" "}
+            <span className="font-medium">{ultimoDiagnostico.nivelAnemia}</span>
+          </p>
+          <p className="text-sm text-gray-500">
+            {tiempoTranscurrido(ultimoDiagnostico.fecha)}
+          </p>
+        </>
+      ) : (
+        <p className="text-gray-500">No hay diagnósticos disponibles.</p>
+      )}
+    </div>
   );
 };
 
