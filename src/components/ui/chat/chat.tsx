@@ -2,21 +2,21 @@ import { useChatContext } from "./chat.context";
 import { Input, Spin } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { fetcher } from "@/lib/fetch/fetcher";
-import { Message } from "@/types/Chat";
+import { Message, Role } from "@/types/Chat";
 import ChatMessage from "./chat-message";
 import { useEffect, useRef, useState } from "react";
 import { getConversationDeetailsByID, sendMessage } from "./services";
 import { message } from "antd";
 import { ConversationType } from "@/types/Chat/types";
+import { scrollIntoView } from "@/lib/scroll";
 
 export default function Chat(){
     const [messageApi, contextHolder] = message.useMessage();
     const { selectedChatID } = useChatContext()
     const lastMessageID = useRef<number | null>(null);
     const [inputValue, setInputValue] = useState("");
-
     const [newMessage, setNewMessage] = useState<Message | null>(null);
-    
+
     const { data: messages, isLoading, isError, refetch : refetchMessages } = useQuery<Message[]>({
         queryKey: ["messages", selectedChatID],
         queryFn: async () => {
@@ -54,27 +54,36 @@ export default function Chat(){
         }
 
         lastMessageID.current = messages[messages.length - 1].id;
-        const el = document.querySelector(`#chat-list li[id="${lastMessageID.current}"]`);
-        if(el){
-            el.scrollIntoView({ behavior: "smooth" });
-        }
+        scrollIntoView(`#chat-list li[id="${lastMessageID.current}"]`)
     },[messages])
 
     async function handleSendMessage(e: React.KeyboardEvent<HTMLInputElement>) {
         e.preventDefault();
+        setInputValue("")
         const target = e.target as HTMLFormElement;
-        console.log("enviar", target.value)
         if (target.value.trim() === "" || !selectedChatID) return;
+        const temporalId = Date.now()
+        setNewMessage({
+            id: temporalId,
+            content: target.value,
+            role: Role.USER,
+            created_at: new Date().toISOString(),
+        })
         const response = await sendMessage(selectedChatID, {
             message: target.value
         })
         if (response){
-            setInputValue("")
             await refetchMessages()
         }else{
             messageApi.error('Error, no se pudo enviar el mensaje')
         }
+        setNewMessage(null)
     }
+
+    useEffect(() => {
+        if(!newMessage) return;
+        scrollIntoView(`#chat-list li[id="${newMessage.id}"]`)
+    },[newMessage])
 
     return (
         <section className="
@@ -103,9 +112,15 @@ export default function Chat(){
                                     return <ChatMessage message={m} key={m.id}/>
                                 })
                             }
+                            {
+                                newMessage && (
+                                    <ChatMessage message={newMessage} key={newMessage.id}/>
+                                )
+                            }
                         </ul>
                     )
                 }
+               
                 <form action="" className="fixed bottom-2 w-[455px]">
                     <Input 
                         value={inputValue}
