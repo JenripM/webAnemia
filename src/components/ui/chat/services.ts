@@ -39,6 +39,20 @@ export async function createDietaConversation(dietaID : number)
     }
 }
 
+export async function createDiagnosticConversation(diagnosticID : number){
+    try {
+        const response = await fetcher(`/chatbot/conversations/create/diagnostico/${diagnosticID}`, {method: "POST"})
+        if (response.ok){
+            return response.json()
+        }
+        console.error("error", response)
+        return null
+    }catch (error) {
+        console.log("error", error)
+        return null
+    }
+}
+
 export async function getConversationDeetailsByID(conversationID : number) : Promise <ConversationDetails | null>{
     try {
         const response = await fetcher(`/chatbot/conversations/${conversationID}`)

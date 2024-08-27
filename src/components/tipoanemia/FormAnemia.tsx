@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select, Checkbox, Card, Spin } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { DiagnosticResponse } from "@/types/Diagnostico";
+import { createDiagnosticConversation } from "../ui/chat/services";
+import { useChatContext } from "../ui/chat/chat.context";
 
 const url = "http://127.0.0.1:8000";
 const { Option } = Select;
@@ -34,8 +37,9 @@ const FormAnemia: React.FC = () => {
   const [patients, setPacientes] = useState<
     Array<{ id: string; nombre: string; dni: string; distrito: string }>
   >([]);
-  const [selectedPaciente, setSelectedPaciente] = useState<number | null>(null);
-  const [prediction, setPrediction] = useState<string | null>(null);
+  const { setOpen, setSelectedChatID } = useChatContext()
+  const [selectedPaciente, setSelectedPaciente] = useState<string | null>(null);
+  const [prediction, setPrediction] = useState<DiagnosticResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
 
@@ -102,7 +106,7 @@ const FormAnemia: React.FC = () => {
 
       const response = await axios.post(`${url}/predict/diagnostico`, data);
       form.setFieldsValue({ resultado_prediccion: response.data.diagnostico });
-      setPrediction(response.data.diagnostico);
+      setPrediction(response.data);
     } catch (error) {
       console.error("Error predicting diagnosis:", error);
     }
@@ -216,9 +220,23 @@ const FormAnemia: React.FC = () => {
       </Card>
 
       <div style={{ width: "50%" }}>
-        <Card title="Información Registrada" bordered={false}>
+        <Card title="Último resultado" bordered={false}>
           <p>Paciente: {selectedPaciente}</p>
-          <p>Predicción: {prediction}</p>
+          <p>Predicción: {prediction?.diagnostico}</p>
+          {
+            prediction && (
+              <Button
+                onClick={async () => {
+                  const newConversation = await createDiagnosticConversation(prediction.id);
+                  if (!newConversation) return
+                  setOpen(true) // Abrir el chat
+                  setSelectedChatID(newConversation.conversation_id)
+                }}
+              >
+                Obtener recomendaciones
+              </Button>
+            )
+          }
         </Card>
       </div>
     </div>
