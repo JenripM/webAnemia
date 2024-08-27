@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import CountInput from './InputNumber';
-import { Form, Select, Button, Modal, List, Spin } from 'antd';
+import { Select, Button, Modal, List } from 'antd';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { useMutation } from '@tanstack/react-query';
 import { fetcher } from '@/lib/fetch/fetcher';
 import { SuggestionsResponse } from '@/types/Dieta/suggestions';
-import { spaceChildren } from 'antd/es/button';
+import { useChatContext } from '../ui/chat/chat.context';
+import { createDietaConversation } from '../ui/chat/services';
+import { RESULTS_DIETA } from '@/types/Dieta/results';
 
 const { Option } = Select;
 
@@ -62,7 +64,8 @@ const FormDieta = () => {
   }, {} as FormData);
   
  
-
+  const { setOpen, setSelectedChatID } = useChatContext()
+  const [dietaResultID, setDietaResultID] = useState<number | null>(null)
   const [pacientes, setPacientes] = useState<{ id: number; nombre: string }[]>([]);
   const [values, setValues] = useState<FormData>(initialValues);
   const [loading, setLoading] = useState<boolean>(false);
@@ -146,6 +149,7 @@ const FormDieta = () => {
       
       //const response = await axios.post('/api/endpoint', { /* tu payload aquí */ });
       const dieta = response.data.dieta;
+      setDietaResultID(response.data.id)
 
       let title = '';
       setModalContent([]);
@@ -154,13 +158,13 @@ const FormDieta = () => {
       suggestionsMutation.mutate(dieta);
 
       switch (dieta) {
-        case 1:
+        case RESULTS_DIETA.RIESGO_BAJO:
           title = 'Probabilidad Baja';
           break;
-        case 2:
+        case RESULTS_DIETA.RIESGO_MODERADO:
           title = 'Probabilidad Media';
           break;
-        case 3:
+        case RESULTS_DIETA.RIESGO_ALTO:
           title = 'Probabilidad Alta';
           break;
         default:
@@ -246,7 +250,20 @@ const FormDieta = () => {
         onOk={handleOk} 
         onCancel={handleOk}
         footer={[
-          <Button key="submit"  onClick={handleOk}>
+          <Button className='bg-blue-600 text-white'       
+            onClick={async () => {
+              if(!dietaResultID) return;
+              const newConversation = await createDietaConversation(dietaResultID)
+              if(!newConversation) return;
+              setDietaResultID(null)
+              setOpen(true) // Abrir el chat
+              setSelectedChatID(newConversation.conversation_id)
+              handleOk()
+            }}
+          >
+            Obtener más recomendaciones
+          </Button>,
+          <Button key="submit" onClick={handleOk}>
             Aceptar
           </Button>,
         ]}

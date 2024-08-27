@@ -1,16 +1,17 @@
 import { fetcher } from '@/lib/fetch/fetcher';
-import { ConversationsHistory } from '@/types/Chat';
+import { Conversation, ConversationsHistory, Message } from '@/types/Chat';
 import { ChatMessageDTO } from '@/types/Chat/dto/ChatMessageDTO';
 import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { message } from 'antd';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { getConversationDeetailsByID, sendMessage } from './services';
+import { ConversationType } from '@/types/Chat/types';
+import { ConversationDetails } from '@/types/Chat/conversation-details';
 
 interface IChatContextProps{
     open: boolean;
     setOpen: (open: boolean) => void;
-    query : UseQueryResult<ConversationsHistory, unknown>,
-    sendMessage: UseMutationResult<unknown, unknown, ChatMessageDTO, unknown>,
-
+    getConversationsQuery : UseQueryResult<ConversationsHistory, unknown>,
     selectedChatID: number | null,
     setSelectedChatID: (selectedChatID: number | null) => void;
 }
@@ -24,9 +25,8 @@ export default function ChatProvider(
     const [messageApi, contextHolder] = message.useMessage();
     const [open, setOpen] = useState(false);
     const [selectedChatID, setSelectedChatID] = useState<number | null>(null);
-    const queryClient = useQueryClient();
 
-    const query = useQuery<ConversationsHistory>({
+    const getConversationsQuery = useQuery<ConversationsHistory>({
         queryKey: ["chat"],
         queryFn: async () => {
             const response = await fetcher("/chatbot/conversations")
@@ -40,29 +40,9 @@ export default function ChatProvider(
         }
       })
 
-      const sendMessage = useMutation({
-        mutationKey: ["sendMessage", selectedChatID],
-        mutationFn: async (message : ChatMessageDTO) => {
-            const response = await fetcher(`/chatbot/conversations/${selectedChatID}/chat/`,{
-                method: 'POST',
-                body: JSON.stringify(message)
-            })
-            console.log("chat response", response)
-        },
-        onError: (error) => {
-            console.log("error", error)
-        },
-        onSuccess: async (data) => {
-            console.log("data", data)
-            await queryClient.invalidateQueries({
-                queryKey: ["chat", selectedChatID],
-            })
-        }
-      })
-
     return <ChatContext.Provider value={{  
         open, setOpen,
-        query, sendMessage,
+        getConversationsQuery,
         selectedChatID, setSelectedChatID,
       }}>
         {children}
